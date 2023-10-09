@@ -944,6 +944,9 @@ MonoBehaviour:
   PlayerSpeed: 10
   accelerationFactor: 2
   decelerationFactor: 2
+  maxHealth: 10
+  currentHealth: 0
+  healthbar: {fileID: 0}
 --- !u!60 &802813320
 PolygonCollider2D:
   m_ObjectHideFlags: 0
