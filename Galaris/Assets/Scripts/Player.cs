@@ -9,10 +9,30 @@ public class Player : MonoBehaviour
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
     private Rigidbody2D rb;
+    public int maxHealth = 10;
+    public int currentHealth;
+
+    public Health healthbar;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        currentHealth = maxHealth;
+        healthbar.SetMaxHealth(maxHealth);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamage(1);
+        }
+    }
+
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        healthbar.SetHealth(currentHealth);
     }
 
     void FixedUpdate()
@@ -42,4 +62,6 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
     }
+
+
 }
