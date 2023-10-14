@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyController : MonoBehaviour
 {
@@ -14,16 +15,27 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float deceleration = 2.0f; // Deceleration rate
     public float bulletSpeed = 10.0f; // Speed of enemy bullets
     public Transform bulletSpawnPoint; // Reference to the bullet spawn point
+    public int maxHealth = 10;
+    public int currentHealth;
 
     private float nextFireTime;
     private float currentSpeed = 0.0f;
 
     private void Start()
     {
+        currentHealth = maxHealth;
         // Find the player GameObject and assign its transform to the 'player' variable
         player = GameObject.FindGameObjectWithTag("Player").transform;
     }
-
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+    }
+    void Die()
+    {
+        Debug.Log("Enemy died!");
+        Destroy(gameObject);
+    }
     private void Update()
     {
         if (player == null)
@@ -49,6 +61,10 @@ public class EnemyController : MonoBehaviour
         else
         {
             currentSpeed = maxMovementSpeed;
+        }
+        if (currentHealth <= 0)
+        {
+            Die();
         }
 
         // Move the enemy towards the player
@@ -81,6 +97,18 @@ public class EnemyController : MonoBehaviour
         else
         {
             Debug.LogWarning("Enemy bullet object is not assigned in the Inspector!");
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("PlayerBulletClone"))
+        {
+            Debug.Log("Player bullet collided with the enemy");
+
+            // Destroy the enemyBullet
+            Destroy(collision.gameObject);
+            TakeDamage(1);
+
         }
     }
 }

@@ -18,7 +18,7 @@ GameObject:
   m_TagString: EnemyBullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &6974601426441238748
 Transform:
@@ -161,7 +161,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38c2edef5c1c08149a0e71629d87ff90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletSpeed: 10
-  trackingTime: 2
-  targetCollider: {fileID: 0}
-  damage: 1
