@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class AimmingJoyStick : MonoBehaviour
 {
+    public int joystickId;
     public Transform player;  // Reference to the player's transform.
     public GameObject joystick2;
     public GameObject joystickBG2;

@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class MovementJoyStick : MonoBehaviour
 {
+    public int joystickId;
     public GameObject joystick;
     public GameObject joystickBG;
     public Vector2 joystickVec;
@@ -20,6 +21,7 @@ public class MovementJoyStick : MonoBehaviour
     
     public void PointerDown()
     {
+
         joystick.transform.position = Input.mousePosition;
         joystickBG.transform.position = Input.mousePosition;
         joystickTouchPos = Input.mousePosition;

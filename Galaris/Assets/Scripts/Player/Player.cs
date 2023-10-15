@@ -9,6 +9,7 @@ using UnityEngine.UIElements.Experimental;
 public class Player : MonoBehaviour
 {
     public MovementJoyStick MovementJoyStick;
+    public AimmingJoyStick AimmingJoyStick;
     public float PlayerSpeed = 10f;
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
@@ -45,10 +46,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            TakeDamage(1);
-        }
 
         if (currentHealth <= 0)
         {
@@ -59,17 +56,6 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("EnemyBulletClone"))
-        {
-            Debug.Log("Enemy bullet collided with the player");
-
-            // Destroy the enemyBullet
-            Destroy(collision.gameObject);
-            TakeDamage(1);
-
-            // Optionally, add any additional logic or effects for when the player is hit by an enemy bullet.
-            // For example, decrease the player's health, play a particle effect, etc.
-        }
         if (collision.gameObject.CompareTag("EnemyBulletClone"))
         {
             Debug.Log("Enemy bullet collided with the player");
