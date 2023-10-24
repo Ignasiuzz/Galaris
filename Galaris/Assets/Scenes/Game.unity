@@ -575,8 +575,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 802813316}
   smoothing: 0.1
-  maxPos: {x: 9.5, y: 5.5}
-  minPos: {x: -9.5, y: -5.5}
+  maxPos: {x: 9, y: 5.5}
+  minPos: {x: -9, y: -5.5}
 --- !u!1 &524536121
 GameObject:
   m_ObjectHideFlags: 0
@@ -726,8 +726,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -626.05, y: -239.68}
-  m_SizeDelta: {x: -1252.1, y: -479.36}
+  m_AnchoredPosition: {x: -800, y: -250}
+  m_SizeDelta: {x: -1600, y: -500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &663458406
 MonoBehaviour:
@@ -741,6 +741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4101cd1ba166f44a56e2efc2a2b87b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  joystickId: 0
   joystick: {fileID: 579327130}
   joystickBG: {fileID: 254700630}
   joystickVec: {x: 0, y: 0}
@@ -882,8 +883,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 634.0637, y: -236.03122}
-  m_SizeDelta: {x: -1268.1274, y: -472.0615}
+  m_AnchoredPosition: {x: 800, y: -250.00024}
+  m_SizeDelta: {x: -1600, y: -499.9995}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &777143733
 MonoBehaviour:
@@ -996,6 +997,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e80440389343149bedc32cb307383d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  joystickId: 0
   player: {fileID: 802813316}
   joystick2: {fileID: 463437652}
   joystickBG2: {fileID: 288043323}
@@ -1012,6 +1014,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementJoyStick: {fileID: 663458406}
+  AimmingJoyStick: {fileID: 0}
   PlayerSpeed: 10
   accelerationFactor: 2
   decelerationFactor: 2
@@ -1262,6 +1265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementJoyStick: {fileID: 663458406}
+  AimmingJoyStick: {fileID: 0}
   PlayerSpeed: 10
   accelerationFactor: 2
   decelerationFactor: 2
