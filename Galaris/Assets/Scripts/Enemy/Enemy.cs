@@ -17,6 +17,7 @@ public class EnemyController : MonoBehaviour
     public Transform bulletSpawnPoint; // Reference to the bullet spawn point
     public int maxHealth = 10;
     public int currentHealth;
+    [SerializeField] FloatingHealthBar healthBar;
 
     private float nextFireTime;
     private float currentSpeed = 0.0f;
@@ -25,11 +26,13 @@ public class EnemyController : MonoBehaviour
     {
         currentHealth = maxHealth;
         // Find the player GameObject and assign its transform to the 'player' variable
+        healthBar = GetComponentInChildren<FloatingHealthBar>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
     }
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
     }
     void Die()
     {

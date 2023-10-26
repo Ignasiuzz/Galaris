@@ -13,7 +13,7 @@ public class AimmingJoyStick : MonoBehaviour
     private Vector2 joystickVec2;
     private Vector2 joystickOriginalPos2;
     private float joystickRadius2;
-    private float shootCooldown = 0.5f; // The time between shots
+    private float shootCooldown = 0.1f; // The time between shots
     private float lastShootTime = 0f; // The time of the last shot
 
     // Create a public method to get the aiming direction.
