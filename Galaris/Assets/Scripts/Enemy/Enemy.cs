@@ -17,12 +17,7 @@ public class EnemyController : MonoBehaviour
     public Transform bulletSpawnPoint; // Reference to the bullet spawn point
     public int maxHealth = 10;
     public int currentHealth;
-<<<<<<< HEAD
     [SerializeField] FloatingHealthBar healthBar;
-=======
-    public int points = 10; // Assign the appropriate point value for this enemy type.
-
->>>>>>> 1f95a3cd466cf96cacf50995996c1ffdb4c4eb97
 
     private float nextFireTime;
     private float currentSpeed = 0.0f;
@@ -118,9 +113,5 @@ public class EnemyController : MonoBehaviour
             TakeDamage(1);
 
         }
-    }
-    void OnDestroy()
-    {
-        FindObjectOfType<ScoreManager>().AddScore(points);
     }
 }

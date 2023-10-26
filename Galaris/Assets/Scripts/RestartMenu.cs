@@ -7,6 +7,6 @@ public class RestartMenu : MonoBehaviour
 {
     public void RestartGame()
     {
-        SceneManager.LoadSceneAsync(1);
+        SceneManager.LoadSceneAsync(0);
     }
 }
