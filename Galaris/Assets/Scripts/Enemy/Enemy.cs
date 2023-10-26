@@ -115,8 +115,6 @@ public class EnemyController : MonoBehaviour
     }
     void OnDestroy()
     {
-        // Call the AddScore method when the enemy is destroyed
         FindObjectOfType<ScoreManager>().AddScore(points);
     }
-
 }
