@@ -5,9 +5,17 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    //1
-    public Slider slider;
 
+    public Slider slider;
+    [SerializeField] private Slider slyder;
+    [SerializeField] private Camera camera;
+    [SerializeField] private Transform target;
+    [SerializeField] private Vector3 offset;
+
+    public void UpdateHealthBar(float currentValue, float maxValue)
+    {
+        slyder.value = currentValue / maxValue;
+    }
     public void SetMaxHealth(int health)
     { 
         slider.maxValue = health;
@@ -17,5 +25,10 @@ public class Health : MonoBehaviour
     public void SetHealth(int health)
     {
         slider.value = health;
+    }
+    void Update()
+    {
+        transform.rotation = camera.transform.rotation;
+        transform.position = target.position + offset;
     }
 }

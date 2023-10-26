@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
     public GameObject[] enemies;
     public Transform enemyTransform;
     public Transform EnemyBulletLocation;
+    [SerializeField] Health healthBar;
     
 
 
@@ -41,6 +42,8 @@ public class Player : MonoBehaviour
         playableArea = GameObject.FindObjectOfType<PlayableArea>();
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
+        healthBar = GetComponentInChildren<Health>();
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
         healthbar.SetMaxHealth(maxHealth);
     }
 
@@ -76,6 +79,7 @@ public class Player : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        healthBar.UpdateHealthBar(currentHealth, maxHealth);
         healthbar.SetHealth(currentHealth);
     }
 
