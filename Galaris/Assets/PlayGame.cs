@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class RestartMenu : MonoBehaviour
+public class PlayGame : MonoBehaviour
 {
-    public void RestartGame()
+    public void StartGame()
     {
         SceneManager.LoadSceneAsync(1);
     }

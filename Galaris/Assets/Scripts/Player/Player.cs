@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
         Debug.Log("Player died!");
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(2);
         Destroy(gameObject);
     }
 
