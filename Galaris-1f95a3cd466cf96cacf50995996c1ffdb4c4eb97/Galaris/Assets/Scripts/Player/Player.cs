@@ -28,12 +28,16 @@ public class Player : MonoBehaviour
     public GameObject[] enemies;
     public Transform enemyTransform;
     public Transform EnemyBulletLocation;
+    public Animator PlayerAnimator;
+    private Rigidbody2D PlayerRigidbody;
+    private Collider2D PlayerCollider;
     [SerializeField] Health healthBar;
     
 
 
     private PlayableArea playableArea; // Reference to the PlayableArea script
     private Quaternion initialRotation;
+    private bool isDead = false;
 
 
     void Start()
@@ -45,6 +49,8 @@ public class Player : MonoBehaviour
         healthBar = GetComponentInChildren<Health>();
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
         healthbar.SetMaxHealth(maxHealth);
+        PlayerRigidbody = GetComponent<Rigidbody2D>();
+        PlayerCollider = GetComponent<Collider2D>();
     }
 
     void Update()
@@ -87,9 +93,17 @@ public class Player : MonoBehaviour
     {
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
+        if (!isDead) isDead = true;
+        PlayerSpeed = 0f;
+        healthBar.gameObject.SetActive(false);
+        PlayerAnimator.SetTrigger("Death");
         Debug.Log("Player died!");
-        SceneManager.LoadScene(2);
+    }
+    public void OnDeathAnimationEnd()
+    {
+        Debug.Log("Death animation ended");
         Destroy(gameObject);
+        SceneManager.LoadScene(2);
     }
 
     void FixedUpdate()

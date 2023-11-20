@@ -18,16 +18,25 @@ public class EnemyController : MonoBehaviour
     public int maxHealth = 10;
     public int currentHealth;
     public int points = 10; // Assign the appropriate point value for this enemy type.
-
+    public Animator EnemyAnimator;
 
     private float nextFireTime;
     private float currentSpeed = 0.0f;
+    private bool isDead = false;
+    private Rigidbody2D enemyRigidbody;
+    private Collider2D enemyCollider;
+
+
 
     private void Start()
     {
         currentHealth = maxHealth;
         // Find the player GameObject and assign its transform to the 'player' variable
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        EnemyAnimator = GetComponent<Animator>();
+        enemyRigidbody = GetComponent<Rigidbody2D>();
+        enemyCollider = GetComponent<Collider2D>();
+
     }
     public void TakeDamage(int damage)
     {
@@ -35,11 +44,26 @@ public class EnemyController : MonoBehaviour
     }
     void Die()
     {
+        if (!isDead) isDead = true;
+        enemyRigidbody.isKinematic = true;
+        enemyCollider.enabled = false;
+        currentSpeed = 0;
         Debug.Log("Enemy died!");
+        EnemyAnimator.SetTrigger("Death");
+        //Destroy(gameObject);
+    }
+    public void OnDeathAnimationEnd()
+    {
+        Debug.Log("Death animation ended");
         Destroy(gameObject);
     }
     private void Update()
     {
+        if (isDead)
+        {
+            return; // Don't perform any actions if the enemy is dead.
+        }
+
         if (player == null)
             return; // If the player is not found, do nothing.
 

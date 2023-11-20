@@ -575,8 +575,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 802813316}
   smoothing: 0.1
-  maxPos: {x: 8, y: 5.5}
-  minPos: {x: -8, y: -5.5}
 --- !u!1 &524536121
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,6 +1392,7 @@ GameObject:
   - component: {fileID: 802813324}
   - component: {fileID: 802813325}
   - component: {fileID: 802813326}
+  - component: {fileID: 802813327}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -1504,6 +1503,7 @@ MonoBehaviour:
   - {fileID: 0}
   enemyTransform: {fileID: 0}
   EnemyBulletLocation: {fileID: 0}
+  PlayerAnimator: {fileID: 802813327}
   healthBar: {fileID: 0}
 --- !u!114 &802813324
 MonoBehaviour:
@@ -1604,6 +1604,27 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!95 &802813327
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802813315}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3263cb13d1ac40a43bfbce128b05706c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &872337612
 GameObject:
   m_ObjectHideFlags: 0
@@ -2604,7 +2625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Enemy: {fileID: 2661784160778554427, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
-  EnemyInterval: 1.5
+  EnemyInterval: 6
 --- !u!4 &1967541166
 Transform:
   m_ObjectHideFlags: 0
