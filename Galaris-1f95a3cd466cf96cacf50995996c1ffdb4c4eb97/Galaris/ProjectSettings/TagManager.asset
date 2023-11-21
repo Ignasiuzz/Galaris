@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - EnemyBulletClone
   - PlayerBulletClone
+  - PlayerFirePoint
   layers:
   - Default
   - TransparentFX

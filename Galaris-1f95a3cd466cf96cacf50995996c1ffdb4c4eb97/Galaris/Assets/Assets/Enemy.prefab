@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 819843162057779656}
   - component: {fileID: 1035241474173603632}
   - component: {fileID: 2740405038468430555}
-  - component: {fileID: 7432378715659037449}
   m_Layer: 3
   m_Name: Enemy
   m_TagString: Enemy
@@ -30,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2661784160778554427}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.8, y: -0.36, z: -1}
+  m_LocalPosition: {x: -3.8, y: -0.36, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -131,17 +130,16 @@ MonoBehaviour:
   player: {fileID: 0}
   enemyBulletObject: {fileID: 4593055589237815139, guid: ccbaf41de2ac1704bb8c11e0ab6685c4, type: 3}
   fireRate: 0.5
-  maxMovementSpeed: 10
+  maxMovementSpeed: 6
   acceleration: 4
-  stopDistance: 12
+  stopDistance: 6
   resumeDistance: 4
   deceleration: 9
-  bulletSpeed: 12
+  bulletSpeed: 10
   bulletSpawnPoint: {fileID: 7628755381651497635}
   maxHealth: 1
   currentHealth: 1
   points: 10
-  EnemyAnimator: {fileID: 7432378715659037449}
 --- !u!60 &2740405038468430555
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -203,27 +201,6 @@ PolygonCollider2D:
       - {x: 0.34, y: -0.35999998}
       - {x: 0.51, y: -0.24}
   m_UseDelaunayMesh: 0
---- !u!95 &7432378715659037449
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2661784160778554427}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9a12911b39c03e24989a9ffd5365984c, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6038107103625480237
 GameObject:
   m_ObjectHideFlags: 0

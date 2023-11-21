@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4727736159624925009}
   - component: {fileID: 6006190603380899717}
   - component: {fileID: 3793952983202171361}
-  - component: {fileID: 8356008620642737551}
+  - component: {fileID: 7846495465170865344}
   - component: {fileID: 8285947142949493962}
   m_Layer: 7
   m_Name: PlayerBullet
@@ -28,9 +28,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1502705813180783573}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.5, y: 0, z: -10}
-  m_LocalScale: {x: 0.8, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6ab6bc4b3a0ea0e41a9b0def5378b830, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 22e8607b337cf9143b48f5701e237f97, type: 3}
+  m_Color: {r: 0, g: 1, b: 0.14189911, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -114,7 +114,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &8356008620642737551
+--- !u!114 &7846495465170865344
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,16 +158,16 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.269576, y: 0.002748534}
+  m_Offset: {x: 0.14993078, y: 0.04934436}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.45, y: 1.41}
+    oldSize: {x: 1.6, y: 1.6}
     newSize: {x: 1.26, y: 1.21}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.73473704, y: 0.16547808}
+  m_Size: {x: 0.49544656, y: 0.09689653}
   m_EdgeRadius: 0

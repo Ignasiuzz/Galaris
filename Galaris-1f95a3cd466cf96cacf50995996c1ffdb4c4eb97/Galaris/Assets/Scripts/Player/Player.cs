@@ -8,37 +8,35 @@ using UnityEngine.UIElements.Experimental;
 
 public class Player : MonoBehaviour
 {
-    public MovementJoyStick MovementJoyStick;
-    public AimmingJoyStick AimmingJoyStick;
+    // Joystick
+    public FloatingJoystick FloatingJoystick;
     public float PlayerSpeed = 10f;
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
+
+    //Health
     private Rigidbody2D rb;
     public int maxHealth = 10;
     public int currentHealth;
     public Health healthbar;
+
     public GameObject enemyBullet; // Reference to the enemy bullet object.
-    public Transform firePoint;
     public Transform BackPoint;
     public GameObject playerBulletObject;
-    public float bulletSpeed = 10f; // Adjust as needed.
     public LayerMask collisionLayers; // Set in the Inspector to specify which layers should trigger deletion;
     public GameObject selectedEnemy; // Reference to the manually selected enemy.
-    public AimmingJoyStick aimingJoystick;
+
     public GameObject[] enemies;
     public Transform enemyTransform;
     public Transform EnemyBulletLocation;
-    public Animator PlayerAnimator;
-    private Rigidbody2D PlayerRigidbody;
-    private Collider2D PlayerCollider;
+
     [SerializeField] Health healthBar;
     
-
-
     private PlayableArea playableArea; // Reference to the PlayableArea script
     private Quaternion initialRotation;
-    private bool isDead = false;
 
+    private float shootCooldown = 0.5f; // The time between shots
+    private float lastShootTime = 0f; // The time of the last shot
 
     void Start()
     {
@@ -49,18 +47,14 @@ public class Player : MonoBehaviour
         healthBar = GetComponentInChildren<Health>();
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
         healthbar.SetMaxHealth(maxHealth);
-        PlayerRigidbody = GetComponent<Rigidbody2D>();
-        PlayerCollider = GetComponent<Collider2D>();
     }
 
     void Update()
     {
-
         if (currentHealth <= 0)
         {
             Die();
         }
-     
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -93,57 +87,26 @@ public class Player : MonoBehaviour
     {
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
-        if (!isDead) isDead = true;
-        PlayerAnimator.SetTrigger("Death");
-        PlayerSpeed = 0f;
-        healthBar.gameObject.SetActive(false);
-        PlayerRigidbody.velocity = Vector2.zero;
-        PlayerRigidbody.angularVelocity = 0f;
         Debug.Log("Player died!");
-    }
-    public void OnDeathAnimationEnd()
-    {
-        Debug.Log("Death animation ended");
-        Destroy(gameObject);
         SceneManager.LoadScene(2);
+        Destroy(gameObject);
     }
 
-    void FixedUpdate()
+    void FixedUpdate()      //Issaukia joystick controll funkcijas
     {
         Movement();
         ApplySteering();
     }
-    public void Shoot()
-    {
-        {
-                // Use the GetAimingDirection method from the AimmingJoyStick script.
-                Vector2 shootingDirection = aimingJoystick.GetAimingDirection();
-
-                GameObject bullet = Instantiate(playerBulletObject, firePoint.position, Quaternion.identity);
-
-                // Calculate the angle based on the aiming direction.
-                float angle = Mathf.Atan2(shootingDirection.y, shootingDirection.x) * Mathf.Rad2Deg;
-
-                // Set the bullet's rotation based on the calculated angle.
-                bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
-                // Set the tag for the bullet prefab in the Unity Inspector.
-                bullet.tag = "PlayerBulletClone";
-
-                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-                rb.velocity = shootingDirection.normalized * bulletSpeed;
-           
-        }
-    }
+    //RIP shooting
     void Movement()
     {
-        Vector2 targetVelocity = new Vector2(MovementJoyStick.joystickVec.x * PlayerSpeed, MovementJoyStick.joystickVec.y * PlayerSpeed);
+        Vector2 targetVelocity = new Vector2(FloatingJoystick.LHorizontal * PlayerSpeed, FloatingJoystick.LVertical * PlayerSpeed);
 
         // Apply acceleration
         rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, Time.fixedDeltaTime * accelerationFactor);
 
         // If joystick input is zero, apply deceleration
-        if (MovementJoyStick.joystickVec == Vector2.zero)
+        if (FloatingJoystick.Linput == Vector2.zero)
         {
             rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, Time.fixedDeltaTime * decelerationFactor);
         }
@@ -155,14 +118,24 @@ public class Player : MonoBehaviour
         {
             float angle = Mathf.Atan2(rb.velocity.y, rb.velocity.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        }
-        // Get the aiming direction from the AimmingJoyStick script.
-        Vector2 aimingDirection = aimingJoystick.GetAimingDirection();
 
-        if (aimingDirection != Vector2.zero)
+        }
+
+
+        if (FloatingJoystick.Rinput != Vector2.zero)
         {
-            float angle = Mathf.Atan2(aimingDirection.y, aimingDirection.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+            //Sitas if veikai kai if(FloatingJoystick.Rinput != Vector2.zero), gauna koda is FloatingJoysticks.cs, kad aiming joystick veikia
+            if (Time.time - lastShootTime >= shootCooldown)
+                {
+                    // Call the Shoot function in the Player script here.
+                    GetComponent<Shooting_no_delete>().Shoot();
+                    // Update the last shot time
+                    lastShootTime = Time.time;
+                    Debug.Log("Shooting");
+                }
         }
     }
 }
