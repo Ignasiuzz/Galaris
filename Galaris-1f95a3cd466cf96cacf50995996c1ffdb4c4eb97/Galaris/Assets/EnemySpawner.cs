@@ -1,34 +1,48 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject Enemy; //Pasako kad toks dalykas kaip Enemy egzistuoja norint pridet nauja enemy reiks sukurt jo Prefab 
-
-    //Enemy pridejimo pvz: Part 1
-    //[SerializeField];
-    //private GameObject (enemy prefab pavadinimas); 
-
-    [SerializeField]
-    private float EnemyInterval = 15f; //Kas kiek laiko tam tikras enemy spawninas
-
-    //Enemy pridejimo pvz: Part 2
-    //[SerializeField];
-    //private float (enemy spawn rate) = xf;
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private float enemySpawnInterval = 15f;
+    [SerializeField] private float spawnRadius = 10f;
+    [SerializeField] private GameObject playerObject; // Reference to the player
 
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(spawnEnemy(EnemyInterval, Enemy));
-        //Enemy pridejimo pvz: Part 3
-        //StartCoroutine(spawnEnemy((enemy spawn rate), (enemy prefab pavadinimas)));
+        if (playerObject == null)
+        {
+            Debug.LogError("Player object not assigned in the inspector.");
+            return;
+        }
+
+        StartCoroutine(SpawnEnemyCoroutine(enemySpawnInterval, enemyPrefab));
     }
 
-    private IEnumerator spawnEnemy(float interval, GameObject enemy){
-        yield return new WaitForSeconds(interval);
-        GameObject NewEnemy = Instantiate(enemy, new Vector3(Random.Range(-10f, 10), Random.Range(-10f, 10), 0), Quaternion.identity); //Random.Range nusako kokio plocio zonoje spawninsis enemys; bendrai visiem
-        StartCoroutine(spawnEnemy(interval, enemy));
+    private IEnumerator SpawnEnemyCoroutine(float interval, GameObject enemy)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(interval);
+
+            // Check if you want to stop spawning enemies (e.g., based on a condition)
+            // if (stopSpawningCondition) break;
+
+            // Calculate a random angle for the enemy spawn position
+            float randomAngle = Random.Range(0f, 360f);
+
+            // Calculate the spawn position based on the angle and spawn radius
+            Vector3 spawnOffset = Quaternion.Euler(0, 0, randomAngle) * Vector3.right * spawnRadius;
+            Vector3 spawnPosition = playerObject.transform.position + spawnOffset;
+
+            // Spawn the enemy at the calculated position
+            GameObject newEnemy = Instantiate(enemy, spawnPosition, Quaternion.identity);
+
+            // You can add more logic here if needed
+
+            // Example: Stop spawning after a certain number of enemies
+            // if (numberOfEnemiesSpawned >= maxEnemiesToSpawn) break;
+        }
     }
 }

@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 2661784160778554427}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.8, y: -0.36, z: -2}
+  m_LocalPosition: {x: -3.8, y: -0.36, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -131,12 +131,12 @@ MonoBehaviour:
   player: {fileID: 0}
   enemyBulletObject: {fileID: 4593055589237815139, guid: ccbaf41de2ac1704bb8c11e0ab6685c4, type: 3}
   fireRate: 0.5
-  maxMovementSpeed: 6
+  maxMovementSpeed: 10
   acceleration: 4
-  stopDistance: 6
+  stopDistance: 12
   resumeDistance: 4
   deceleration: 9
-  bulletSpeed: 10
+  bulletSpeed: 12
   bulletSpawnPoint: {fileID: 7628755381651497635}
   maxHealth: 1
   currentHealth: 1

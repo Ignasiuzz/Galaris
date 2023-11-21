@@ -94,9 +94,11 @@ public class Player : MonoBehaviour
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
         if (!isDead) isDead = true;
+        PlayerAnimator.SetTrigger("Death");
         PlayerSpeed = 0f;
         healthBar.gameObject.SetActive(false);
-        PlayerAnimator.SetTrigger("Death");
+        PlayerRigidbody.velocity = Vector2.zero;
+        PlayerRigidbody.angularVelocity = 0f;
         Debug.Log("Player died!");
     }
     public void OnDeathAnimationEnd()
