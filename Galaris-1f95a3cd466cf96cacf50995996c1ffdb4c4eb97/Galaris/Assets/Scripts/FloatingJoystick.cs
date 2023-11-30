@@ -30,9 +30,9 @@ public class FloatingJoystick : MonoBehaviour
     public float LHorizontal {get{return Linput.x;}}            //Kairiojo joystick horizontalus input x
     Vector2 LJoyPosition = Vector2.zero;                        //Pradine pozicija
 
-    public Vector2 Rinput = Vector2.zero;                       //Desinys imput
-    public float RVertical {get{return Rinput.y;}}              //Disiniojo joystick vertikalus input y
-    public float RHorizontal {get{return Rinput.x;}}            //Desiniojo joystick horizontalus input x
+    public Vector2 Rinput = Vector2.zero;                       //Kairys imput
+    public float RVertical {get{return Rinput.y;}}              //Kairiojo joystick vertikalus input y
+    public float RHorizontal {get{return Rinput.x;}}            //Kairiojo joystick horizontalus input x
     Vector2 RJoyPosition = Vector2.zero;                        //Pradine pozicija
 
     private Vector2 LstartingPoint;                             //Pradine pozicija
@@ -42,11 +42,9 @@ public class FloatingJoystick : MonoBehaviour
 
     public void Update()
     {
-
         int i=0;
         while (i < Input.touchCount)                            //Programa veikia, jei yra bent vienas touch inputas
         {
-
             Touch touch = Input.GetTouch(i);
             Vector2 touchPos = touch.position;
 
@@ -55,7 +53,7 @@ public class FloatingJoystick : MonoBehaviour
                 Touch Ltouch = Input.GetTouch(i);
                 Vector2 LtouchPos = Ltouch.position;
 
-                if (Ltouch.phase == TouchPhase.Began && RectTransformUtility.RectangleContainsScreenPoint(LJoyBackground, LtouchPos))
+                if (Ltouch.phase == TouchPhase.Began && RectTransformUtility.RectangleContainsScreenPoint(LJoyBackground, LtouchPos))       //Scripto pradzia
                 {
                     Debug.Log("Touch Began" + Ltouch.position);     //Touch pradzios debugger
                                                                     //Touch pradzioje keiciasi veriables
@@ -64,7 +62,6 @@ public class FloatingJoystick : MonoBehaviour
                     LBackground.gameObject.SetActive(true);         //Joystickas atsiranda
                     LBackground.position = LstartingPoint;
                     LJoyPosition = LstartingPoint;
-
                 }
                 else if (Ltouch.phase == TouchPhase.Ended)
                 {
@@ -80,7 +77,7 @@ public class FloatingJoystick : MonoBehaviour
                 {
                     Debug.Log("Touch Moved" + Ltouch.position);
 
-                    Vector2 LJoyDriection = LtouchPos - LJoyPosition; //Driection???
+                    Vector2 LJoyDriection = LtouchPos - LJoyPosition;
                     Linput = (LJoyDriection.magnitude > LBackground.sizeDelta.x / 2f) ? LJoyDriection.normalized :
                         LJoyDriection / (LBackground.sizeDelta.x / 2f);
                     if (LJoyStickDirection == LJoyStickDirection.LHorizontal)
@@ -93,7 +90,6 @@ public class FloatingJoystick : MonoBehaviour
 
             if (RectTransformUtility.RectangleContainsScreenPoint(RTfield, touchPos))       //Desinio joystick scriptas
             {
-
                 Touch Rtouch = Input.GetTouch(i);
                 Vector2 RtouchPos = Rtouch.position;
 
@@ -101,7 +97,7 @@ public class FloatingJoystick : MonoBehaviour
                 {
                     Debug.Log("Touch Began" + Rtouch.position);     //Touch pradzios debugger
                                                                     //Touch pradzioje keiciasi veriables
-                    rightTouch = Rtouch.fingerId;
+                    rightTouch = Rtouch.fingerId;                   
                     RstartingPoint = RtouchPos;
                     RBackground.gameObject.SetActive(true);         //Joystickas atsiranda
                     RBackground.position = RstartingPoint;
@@ -121,7 +117,7 @@ public class FloatingJoystick : MonoBehaviour
                 {
                     Debug.Log("Touch Moved" + Rtouch.position);
 
-                    Vector2 RJoyDriection = RtouchPos - RJoyPosition; //Driection???
+                    Vector2 RJoyDriection = RtouchPos - RJoyPosition;
                     Rinput = (RJoyDriection.magnitude > RBackground.sizeDelta.x / 2f) ? RJoyDriection.normalized :
                         RJoyDriection / (RBackground.sizeDelta.x / 2f);
                     if (RJoyStickDirection == RJoyStickDirection.RHorizontal)
@@ -130,7 +126,6 @@ public class FloatingJoystick : MonoBehaviour
                         Rinput = new Vector2(0f, Rinput.y);
                     RHandle.anchoredPosition = (Rinput * RBackground.sizeDelta.x / 2f) * RHandleLimit;
                 }
-                
             }
 
             i++;
