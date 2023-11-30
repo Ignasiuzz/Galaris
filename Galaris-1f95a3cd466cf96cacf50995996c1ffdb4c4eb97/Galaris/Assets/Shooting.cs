@@ -5,16 +5,16 @@ using UnityEngine.EventSystems;
 
 public class Shooting : MonoBehaviour
 {
-    public Transform FirePoint;
+    public Transform killME;
     public GameObject PlayerBullet;
 
     public float bulletForce = 30f; //kulkos greitis
 
     public void Shoot()
     {
-        GameObject bullet = Instantiate(PlayerBullet, FirePoint.position, FirePoint.rotation);//Sukuri kulka, kuria saus
+        GameObject bullet = Instantiate(PlayerBullet, killME.position, killME.rotation);//Sukuri kulka, kuria saus
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.AddForce(FirePoint.right * bulletForce, ForceMode2D.Impulse);//pasiuncia ta kulka tiesiai
+        rb.AddForce(killME.right * bulletForce, ForceMode2D.Impulse);//pasiuncia ta kulka tiesiai
 
     }
 }

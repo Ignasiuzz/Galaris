@@ -17,8 +17,7 @@ public class Player : MonoBehaviour
     public int currentHealth;
     public Health healthbar;
     public GameObject enemyBullet; // Reference to the enemy bullet object.
-    public Transform firePoint;
-    public Transform BackPoint;
+
     public GameObject playerBulletObject;
     public float bulletSpeed = 10f; // Adjust as needed.
     public LayerMask collisionLayers; // Set in the Inspector to specify which layers should trigger deletion;
@@ -138,6 +137,9 @@ public class Player : MonoBehaviour
 
         if (FloatingJoystick.Rinput != Vector2.zero)
         {
+            float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
             if (Time.time - lastShootTime >= shootCooldown)
             {
                 // Call the Shoot function in the Player script here.
@@ -146,8 +148,6 @@ public class Player : MonoBehaviour
                 lastShootTime = Time.time;
                 Debug.Log("Shooting");
             }
-            float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
     }
 }
