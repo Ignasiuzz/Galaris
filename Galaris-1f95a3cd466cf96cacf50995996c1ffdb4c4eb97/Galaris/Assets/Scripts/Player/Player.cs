@@ -9,8 +9,6 @@ using UnityEngine.UIElements.Experimental;
 public class Player : MonoBehaviour
 {
     public FloatingJoystick FloatingJoystick;
-    public MovementJoyStick MovementJoyStick;
-    public AimmingJoyStick AimmingJoyStick;
     public float PlayerSpeed = 10f;
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
@@ -25,7 +23,6 @@ public class Player : MonoBehaviour
     public float bulletSpeed = 10f; // Adjust as needed.
     public LayerMask collisionLayers; // Set in the Inspector to specify which layers should trigger deletion;
     public GameObject selectedEnemy; // Reference to the manually selected enemy.
-    public AimmingJoyStick aimingJoystick;
     public GameObject[] enemies;
     public Transform enemyTransform;
     public Transform EnemyBulletLocation;
@@ -40,6 +37,8 @@ public class Player : MonoBehaviour
     private Quaternion initialRotation;
     private bool isDead = false;
 
+    private float shootCooldown = 0.5f; // The time between shots
+    private float lastShootTime = 0f; // The time of the last shot
 
     void Start()
     {
@@ -114,29 +113,6 @@ public class Player : MonoBehaviour
         Movement();
         ApplySteering();
     }
-    public void Shoot()
-    {
-        {
-                // Use the GetAimingDirection method from the AimmingJoyStick script.
-                Vector2 shootingDirection = aimingJoystick.GetAimingDirection();
-
-                GameObject bullet = Instantiate(playerBulletObject, firePoint.position, Quaternion.identity);
-
-                // Calculate the angle based on the aiming direction.
-                float angle = Mathf.Atan2(shootingDirection.y, shootingDirection.x) * Mathf.Rad2Deg;
-
-                // Set the bullet's rotation based on the calculated angle.
-                bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
-                // Set the tag for the bullet prefab in the Unity Inspector.
-                bullet.tag = "PlayerBulletClone";
-
-                Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-                rb.velocity = shootingDirection.normalized * bulletSpeed;
-           
-        }
-    }
-
     void Movement()
     {
         Vector2 targetVelocity = new Vector2(FloatingJoystick.LHorizontal * PlayerSpeed, FloatingJoystick.LVertical * PlayerSpeed);
@@ -162,6 +138,14 @@ public class Player : MonoBehaviour
 
         if (FloatingJoystick.Rinput != Vector2.zero)
         {
+            if (Time.time - lastShootTime >= shootCooldown)
+            {
+                // Call the Shoot function in the Player script here.
+                GetComponent<Shooting>().Shoot();
+                // Update the last shot time
+                lastShootTime = Time.time;
+                Debug.Log("Shooting");
+            }
             float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
