@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public float PlayerSpeed = 10f;
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
+    
     private Rigidbody2D rb;
     public int maxHealth = 10;
     public int currentHealth;
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
     public Animator PlayerAnimator;
     private Rigidbody2D PlayerRigidbody;
     private Collider2D PlayerCollider;
-    [SerializeField] Health healthBar;
+    public Health healthBar;
     
 
 

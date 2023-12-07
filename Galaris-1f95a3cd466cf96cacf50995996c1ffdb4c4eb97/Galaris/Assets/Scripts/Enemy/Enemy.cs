@@ -52,6 +52,8 @@ public class EnemyController : MonoBehaviour
         enemyRigidbody.angularVelocity = 0f;
         Debug.Log("Enemy died!");
         EnemyAnimator.SetTrigger("Death");
+
+        GetComponent<DropList>().InstantiateLoot(transform.position);
     }
 
     public void OnDeathAnimationEnd()
