@@ -55,7 +55,7 @@ public class FloatingJoystick : MonoBehaviour
 
                 if (Ltouch.phase == TouchPhase.Began && RectTransformUtility.RectangleContainsScreenPoint(LJoyBackground, LtouchPos))       //Scripto pradzia
                 {
-                    Debug.Log("Touch Began" + Ltouch.position);     //Touch pradzios debugger
+                   // Debug.Log("Touch Began" + Ltouch.position);     //Touch pradzios debugger
                                                                     //Touch pradzioje keiciasi veriables
                     leftTouch = Ltouch.fingerId;
                     LstartingPoint = LtouchPos;
@@ -65,7 +65,7 @@ public class FloatingJoystick : MonoBehaviour
                 }
                 else if (Ltouch.phase == TouchPhase.Ended)
                 {
-                    Debug.Log("Touch End" + Ltouch.position);       //Touch pabaigos debugger
+                   // Debug.Log("Touch End" + Ltouch.position);       //Touch pabaigos debugger
 
                     leftTouch = 99;
                     Linput = Vector2.zero;
@@ -75,7 +75,7 @@ public class FloatingJoystick : MonoBehaviour
                 }
                 else if (Ltouch.phase == TouchPhase.Moved && leftTouch == Ltouch.fingerId)      //Joysticko pirsto sekimo scriptas
                 {
-                    Debug.Log("Touch Moved" + Ltouch.position);
+                   // Debug.Log("Touch Moved" + Ltouch.position);
 
                     Vector2 LJoyDriection = LtouchPos - LJoyPosition;
                     Linput = (LJoyDriection.magnitude > LBackground.sizeDelta.x / 2f) ? LJoyDriection.normalized :
@@ -95,7 +95,7 @@ public class FloatingJoystick : MonoBehaviour
 
                 if (Rtouch.phase == TouchPhase.Began && RectTransformUtility.RectangleContainsScreenPoint(RJoyBackground, RtouchPos))       //Scripto pradzia
                 {
-                    Debug.Log("Touch Began" + Rtouch.position);     //Touch pradzios debugger
+                 //   Debug.Log("Touch Began" + Rtouch.position);     //Touch pradzios debugger
                                                                     //Touch pradzioje keiciasi veriables
                     rightTouch = Rtouch.fingerId;                   
                     RstartingPoint = RtouchPos;
@@ -105,7 +105,7 @@ public class FloatingJoystick : MonoBehaviour
                 }
                 else if (Rtouch.phase == TouchPhase.Ended)
                 {
-                    Debug.Log("Touch End" + Rtouch.position);       //Touch pabaigos debugger
+                   // Debug.Log("Touch End" + Rtouch.position);       //Touch pabaigos debugger
 
                     rightTouch = 99;
                     Rinput = Vector2.zero;
@@ -115,7 +115,7 @@ public class FloatingJoystick : MonoBehaviour
                 }
                 else if (Rtouch.phase == TouchPhase.Moved && rightTouch == Rtouch.fingerId)     //Joysticko pirsto sekimo scriptas
                 {
-                    Debug.Log("Touch Moved" + Rtouch.position);
+                   // Debug.Log("Touch Moved" + Rtouch.position);
 
                     Vector2 RJoyDriection = RtouchPos - RJoyPosition;
                     Rinput = (RJoyDriection.magnitude > RBackground.sizeDelta.x / 2f) ? RJoyDriection.normalized :

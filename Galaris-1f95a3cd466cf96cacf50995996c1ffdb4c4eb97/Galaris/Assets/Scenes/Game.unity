@@ -871,7 +871,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 043c51f665fe041fdba821fbf1966753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreText: {fileID: 1657125876}
+  ScoreText: {fileID: 1657125876}
   highScoreText: {fileID: 0}
 --- !u!4 &592998926
 Transform:
@@ -885,7 +885,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1590351563}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &684235708
@@ -1672,6 +1673,7 @@ GameObject:
   - component: {fileID: 1590351562}
   - component: {fileID: 1590351561}
   - component: {fileID: 1590351560}
+  - component: {fileID: 1590351564}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1755,13 +1757,25 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1657125875}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 592998926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1590351564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590351559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cd0926bb7e2c4f7f81fa0e5bb7957fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1657125874
 GameObject:
   m_ObjectHideFlags: 0
@@ -1774,7 +1788,7 @@ GameObject:
   - component: {fileID: 1657125877}
   - component: {fileID: 1657125876}
   m_Layer: 5
-  m_Name: Score
+  m_Name: ScoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1821,8 +1835,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c839f5b16b9b743c589b405fdcf8740d, type: 2}
+  m_sharedMaterial: {fileID: -611872892194545938, guid: c839f5b16b9b743c589b405fdcf8740d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1846,8 +1860,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
-  m_fontSizeBase: 72
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2177,7 +2191,6 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 592998926}
   - {fileID: 183574287}
-  - {fileID: 1590351563}
   - {fileID: 802813316}
   - {fileID: 1967541166}
   - {fileID: 958333127}
