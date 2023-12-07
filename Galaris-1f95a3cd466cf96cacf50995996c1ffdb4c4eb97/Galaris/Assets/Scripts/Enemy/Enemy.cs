@@ -25,6 +25,10 @@ public class EnemyController : MonoBehaviour
     private Rigidbody2D enemyRigidbody;
     private Collider2D enemyCollider;
 
+    //sound
+    [SerializeField] private AudioSource ShootSoundEffect;
+    [SerializeField] private AudioSource DeathSoundEffect;
+
     private float catchUpDistance = 30.0f; // Distance to trigger catch-up behavior
     private float catchUpSpeedMultiplier = 2.0f; // Speed multiplier for catch-up behavior
 
@@ -45,6 +49,7 @@ public class EnemyController : MonoBehaviour
     void Die()
     {
         if (!isDead) isDead = true;
+        DeathSoundEffect.Play();
         enemyRigidbody.isKinematic = true;
         enemyCollider.enabled = false;
         currentSpeed = 0;
@@ -126,6 +131,7 @@ public class EnemyController : MonoBehaviour
             GameObject enemyBullet = Instantiate(enemyBulletObject, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
             enemyBullet.tag = "EnemyBulletClone";
 
+            ShootSoundEffect.Play();
             Rigidbody2D rb = enemyBullet.GetComponent<Rigidbody2D>();
             Vector2 direction = (player.position - bulletSpawnPoint.position).normalized;
             rb.velocity = direction * bulletSpeed;

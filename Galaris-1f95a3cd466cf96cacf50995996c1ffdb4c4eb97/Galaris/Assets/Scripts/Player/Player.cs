@@ -31,6 +31,8 @@ public class Player : MonoBehaviour
     private Collider2D PlayerCollider;
     public Health healthBar;
     
+    //sound
+    [SerializeField] private AudioSource ShootSoundEffect;
 
 
     private PlayableArea playableArea; // Reference to the PlayableArea script
@@ -142,7 +144,8 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
             if (Time.time - lastShootTime >= shootCooldown)
-            {
+            {   
+                ShootSoundEffect.Play();
                 // Call the Shoot function in the Player script here.
                 GetComponent<Shooting>().Shoot();
                 // Update the last shot time
