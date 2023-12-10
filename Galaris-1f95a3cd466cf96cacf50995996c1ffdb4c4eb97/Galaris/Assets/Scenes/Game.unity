@@ -516,7 +516,7 @@ MonoBehaviour:
   unloadDistance: 100
   spawnInterval: 1
   objectsToSpawn: 15
-  minDistanceBetweenObjects: 1
+  minDistanceBetweenObjects: 10
   spawnableObjects:
   - prefab: {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
     spawnProbability: 10
@@ -1100,11 +1100,11 @@ MonoBehaviour:
   collisionLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  selectedEnemy: {fileID: 0}
+  selectedEnemy: {fileID: 2661784160778554427, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
   enemies:
   - {fileID: 0}
-  enemyTransform: {fileID: 0}
-  EnemyBulletLocation: {fileID: 0}
+  enemyTransform: {fileID: 7431575079131281710, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
+  EnemyBulletLocation: {fileID: 6974601426441238748, guid: ccbaf41de2ac1704bb8c11e0ab6685c4, type: 3}
   PlayerAnimator: {fileID: 802813327}
   healthBar: {fileID: 0}
   ShootSoundEffect: {fileID: 802813329}
@@ -1405,9 +1405,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backgroundPrefab: {fileID: 490068248968823565, guid: 6239cbdd0fc59e14a96ec0963cea8f14, type: 3}
-  gridWidth: 3
-  gridHeight: 3
-  backgroundSize: 30
+  gridWidth: 2
+  gridHeight: 2
+  backgroundSize: 40
 --- !u!4 &958333127
 Transform:
   m_ObjectHideFlags: 0
@@ -2412,8 +2412,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1911783669}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 440.8162, y: -68.90943, z: -8.425992}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 440.8162, y: -68.90943, z: -8.425991}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

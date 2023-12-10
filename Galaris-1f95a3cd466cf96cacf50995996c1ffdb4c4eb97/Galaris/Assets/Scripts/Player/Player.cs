@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements.Experimental;
 
 public class Player : MonoBehaviour
 {
@@ -12,7 +9,7 @@ public class Player : MonoBehaviour
     public float PlayerSpeed = 10f;
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
-    
+
     private Rigidbody2D rb;
     public int maxHealth = 10;
     public int currentHealth;
@@ -30,10 +27,9 @@ public class Player : MonoBehaviour
     private Rigidbody2D PlayerRigidbody;
     private Collider2D PlayerCollider;
     public Health healthBar;
-    
+
     //sound
     [SerializeField] private AudioSource ShootSoundEffect;
-
 
     private PlayableArea playableArea; // Reference to the PlayableArea script
     private Quaternion initialRotation;
@@ -57,12 +53,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-
         if (currentHealth <= 0)
         {
             Die();
         }
-     
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -83,7 +77,6 @@ public class Player : MonoBehaviour
         }
     }
 
-
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
@@ -96,13 +89,22 @@ public class Player : MonoBehaviour
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
         if (!isDead) isDead = true;
+
+        // Disable both joysticks
+        FloatingJoystick.gameObject.SetActive(false);
+
         PlayerAnimator.SetTrigger("Death");
         PlayerSpeed = 0f;
         healthBar.gameObject.SetActive(false);
         PlayerRigidbody.velocity = Vector2.zero;
         PlayerRigidbody.angularVelocity = 0f;
+
+        // Ensure the player's rotation remains frozen in the death position
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+
         Debug.Log("Player died!");
     }
+
     public void OnDeathAnimationEnd()
     {
         Debug.Log("Death animation ended");
@@ -115,6 +117,7 @@ public class Player : MonoBehaviour
         Movement();
         ApplySteering();
     }
+
     void Movement()
     {
         Vector2 targetVelocity = new Vector2(FloatingJoystick.LHorizontal * PlayerSpeed, FloatingJoystick.LVertical * PlayerSpeed);
@@ -137,14 +140,13 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
-
         if (FloatingJoystick.Rinput != Vector2.zero)
         {
             float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
             if (Time.time - lastShootTime >= shootCooldown)
-            {   
+            {
                 ShootSoundEffect.Play();
                 // Call the Shoot function in the Player script here.
                 GetComponent<Shooting>().Shoot();
