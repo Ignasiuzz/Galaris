@@ -510,17 +510,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ba9635d72e7a44458ad3d04d11e80ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectsToSpawn:
-  - {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
-  - {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
-  - {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
-  - {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
-  - {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
-  spawnDistanceMin: 30
-  spawnDistanceMax: 50
-  unloadDistance: 50
-  spawnInterval: 3
-  spawnableObjectPrefab: {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
+  poolSize: 30
+  spawnDistanceMin: 60
+  spawnDistanceMax: 200
+  unloadDistance: 100
+  spawnInterval: 1
+  objectsToSpawn: 15
+  minDistanceBetweenObjects: 1
+  spawnableObjects:
+  - prefab: {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
+    spawnProbability: 10
+  - prefab: {fileID: 4187966255285545747, guid: ca88b801d1c20844991d6cbe897233c6, type: 3}
+    spawnProbability: 7
+  playerTransform: {fileID: 802813316}
 --- !u!4 &198814312
 Transform:
   m_ObjectHideFlags: 0
