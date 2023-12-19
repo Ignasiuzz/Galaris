@@ -185,11 +185,19 @@ public class UpgradeMenu : MonoBehaviour
     void SetWeaponText() {
         WeaponLevel.text = "Weapon Level: " + GunLevel;
         GunUpgradeCost.text = "Next Weapon Upgrade Cost: " + GunUpgradeCost_;
+        if (GunLevel == 4){
+            WeaponLevel.text = "Gun Level: MAX";
+            GunUpgradeCost.text = "Next Gun Upgrade Cost: ";
+        }
     }
 
     void SetHealthText() {
         HealthLevels.text = "Health Level: " + HealthLevel;
         HealthUpgradeCost.text = "Next Health Upgrade Cost: " + HealthUpgradeCost_;
+        if (HealthLevel == 4){
+            HealthLevels.text = "Health Level: MAX";
+            HealthUpgradeCost.text = "Next Health Upgrade Cost: ";
+        }
     }
 
     public void SetUPText() {
