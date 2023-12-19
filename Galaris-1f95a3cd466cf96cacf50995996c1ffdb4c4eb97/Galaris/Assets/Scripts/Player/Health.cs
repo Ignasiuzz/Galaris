@@ -16,13 +16,13 @@ public class Health : MonoBehaviour
     {
         slyder.value = currentValue / maxValue;
     }
-    public void SetMaxHealth(int health)
+    public void SetMaxHealth(float health)
     { 
         slider.maxValue = health;
         slider.value = health;
     }
 
-    public void SetHealth(int health)
+    public void SetHealth(float health)
     {
         slider.value = health;
     }

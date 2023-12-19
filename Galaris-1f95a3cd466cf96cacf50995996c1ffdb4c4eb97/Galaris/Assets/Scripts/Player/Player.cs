@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements.Experimental;
 
 public class Player : MonoBehaviour
 {
@@ -9,10 +12,10 @@ public class Player : MonoBehaviour
     public float PlayerSpeed = 10f;
     public float accelerationFactor = 2f;
     public float decelerationFactor = 2f;
-
+    
     private Rigidbody2D rb;
-    public int maxHealth = 10;
-    public int currentHealth;
+    public float maxHealth;
+    public float currentHealth;
     public Health healthbar;
     public GameObject enemyBullet; // Reference to the enemy bullet object.
 
@@ -28,23 +31,30 @@ public class Player : MonoBehaviour
     private Collider2D PlayerCollider;
     public Health healthBar;
 
+    private float enemyDamage = 1f;
+    
     //sound
     [SerializeField] private AudioSource ShootSoundEffect;
+
 
     private PlayableArea playableArea; // Reference to the PlayableArea script
     private Quaternion initialRotation;
     private bool isDead = false;
 
-    private float shootCooldown = 0.5f; // The time between shots
+    public float shootCooldown = 0.5f; // The time between shots
     private float lastShootTime = 0f; // The time of the last shot
+
+    UpgradeMenu UpgradeLevel;
 
     void Start()
     {
+        maxHealth = 10.0f;
         initialRotation = transform.rotation;
         playableArea = GameObject.FindObjectOfType<PlayableArea>();
         rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
-        healthBar = GetComponentInChildren<Health>();
+        healthBar = FindObjectOfType<Health>();
+        healthbar = FindObjectOfType<Health>();
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
         healthbar.SetMaxHealth(maxHealth);
         PlayerRigidbody = GetComponent<Rigidbody2D>();
@@ -53,10 +63,12 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+
         if (currentHealth <= 0)
         {
             Die();
         }
+     
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -67,7 +79,7 @@ public class Player : MonoBehaviour
 
             // Destroy the enemyBullet
             Destroy(collision.gameObject);
-            TakeDamage(1);
+            TakeDamage(enemyDamage);
 
             // Optionally, add any additional logic or effects for when the player is hit by an enemy bullet.
             // For example, decrease the player's health, play a particle effect, etc.
@@ -77,7 +89,8 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+
+    public void TakeDamage(float damage)
     {
         currentHealth -= damage;
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
@@ -89,20 +102,16 @@ public class Player : MonoBehaviour
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
         if (!isDead) isDead = true;
-
-        // Disable both joysticks
-        FloatingJoystick.gameObject.SetActive(false);
-
         PlayerAnimator.SetTrigger("Death");
         PlayerSpeed = 0f;
         healthBar.gameObject.SetActive(false);
         PlayerRigidbody.velocity = Vector2.zero;
         PlayerRigidbody.angularVelocity = 0f;
-
-        // Ensure the player's rotation remains frozen in the death position
-        rb.constraints = RigidbodyConstraints2D.FreezeAll;
-
         Debug.Log("Player died!");
+
+        //Player Upgrade Reset
+        UpgradeLevel.GunLevel = 1;
+        UpgradeLevel.HealthLevel = 1;
     }
 
     public void OnDeathAnimationEnd()
@@ -117,7 +126,6 @@ public class Player : MonoBehaviour
         Movement();
         ApplySteering();
     }
-
     void Movement()
     {
         Vector2 targetVelocity = new Vector2(FloatingJoystick.LHorizontal * PlayerSpeed, FloatingJoystick.LVertical * PlayerSpeed);
@@ -140,13 +148,14 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
 
+
         if (FloatingJoystick.Rinput != Vector2.zero)
         {
             float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
             if (Time.time - lastShootTime >= shootCooldown)
-            {
+            {   
                 ShootSoundEffect.Play();
                 // Call the Shoot function in the Player script here.
                 GetComponent<Shooting>().Shoot();
@@ -156,4 +165,5 @@ public class Player : MonoBehaviour
             }
         }
     }
+
 }

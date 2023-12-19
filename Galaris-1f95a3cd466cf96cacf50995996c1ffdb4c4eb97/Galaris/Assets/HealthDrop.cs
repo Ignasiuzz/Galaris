@@ -7,20 +7,25 @@ using UnityEngine;
 public class HealthPickup : MonoBehaviour
 {
     Player playerHealth;
+    Health HP;
 
-    public int addHealth = 10;
+    public float addHealth;
 
     void Awake(){
         playerHealth = FindObjectOfType<Player>();
+        HP = FindObjectOfType<Health>();
     }
 
     void OnTriggerEnter2D(Collider2D col){
+        addHealth = playerHealth.maxHealth / 10;
+
         if (playerHealth.currentHealth < playerHealth.maxHealth){
 
             Destroy(gameObject);
             Debug.Log("Health Picked Up!");
             playerHealth.currentHealth = playerHealth.currentHealth + addHealth;
-            playerHealth.healthBar.UpdateHealthBar(playerHealth.currentHealth, playerHealth.maxHealth);
+            HP.UpdateHealthBar(playerHealth.currentHealth, playerHealth.maxHealth);
+            HP.SetHealth(playerHealth.currentHealth);
 
         }
     }

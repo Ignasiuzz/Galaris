@@ -235,7 +235,7 @@ MonoBehaviour:
   bulletSpawnPoint2: {fileID: 529390845717048749}
   maxHealth: 2
   currentHealth: 2
-  points: 25
+  points: 30
   EnemyAnimator: {fileID: -982941358974175368}
   ShootSoundEffect: {fileID: 0}
   DeathSoundEffect: {fileID: 0}

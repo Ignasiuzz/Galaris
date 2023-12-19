@@ -3,6 +3,8 @@ using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
+    UpgradeMenu UP;
+
     public TextMeshProUGUI ScoreText;
     public TextMeshProUGUI highScoreText;
 
@@ -31,6 +33,8 @@ public class ScoreManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        UP = FindObjectOfType<UpgradeMenu>();
     }
 
     void Start()
@@ -49,6 +53,7 @@ public class ScoreManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
+        UP.UpgradePoints_ = UP.UpgradePoints_ + points / 10;
 
         if (score > highScore)
         {
@@ -58,6 +63,7 @@ public class ScoreManager : MonoBehaviour
         }
 
         SetScoreText();
+        UP.SetUPText();
     }
 
     public void ResetHighScore()
@@ -77,8 +83,10 @@ public class ScoreManager : MonoBehaviour
     // Add this method to reset the score to 0
     public void ResetScore()
     {
+        UP.UpgradePoints_ = 0;
         score = 0;
         SetScoreText();
+        UP.SetUPText();
     }
 
     void UpdateHighScoreText()
