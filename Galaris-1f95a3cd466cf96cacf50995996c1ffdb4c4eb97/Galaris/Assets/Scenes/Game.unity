@@ -510,10 +510,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ba9635d72e7a44458ad3d04d11e80ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poolSize: 30
-  spawnDistanceMin: 60
+  poolSize: 100
+  spawnDistanceMin: 30
   spawnDistanceMax: 200
-  unloadDistance: 100
+  unloadDistance: 500
   spawnInterval: 1
   objectsToSpawn: 15
   minDistanceBetweenObjects: 10
@@ -2448,10 +2448,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 955164c1767b0ea4ea9ce1c46a3ceb32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 2661784160778554427, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
-  enemySpawnInterval: 1
-  spawnRadius: 30
+  enemyTypes:
+  - enemyPrefab: {fileID: 2661784160778554427, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
+    spawnInterval: 1
+  - enemyPrefab: {fileID: 3333666172669618366, guid: e8878258b0a0a3f4cad999699e4006c6, type: 3}
+    spawnInterval: 5
+  spawnRadius: 20
   playerObject: {fileID: 802813315}
+  maxEnemiesToSpawn: 50
 --- !u!4 &1967541166
 Transform:
   m_ObjectHideFlags: 0
