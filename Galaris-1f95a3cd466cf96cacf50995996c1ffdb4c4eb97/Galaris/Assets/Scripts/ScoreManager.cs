@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class ScoreManager : MonoBehaviour
@@ -17,6 +18,12 @@ public class ScoreManager : MonoBehaviour
 
     // Make score accessible to other scripts
     public int Score { get { return score; } }
+
+    // Static variable to store the most recent score
+    private static int lastScore;
+
+    // Constants
+    private const int PointsPerUpgrade = 10;
 
     // Singleton instance
     public static ScoreManager Instance;
@@ -53,17 +60,28 @@ public class ScoreManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
-        UP.UpgradePoints_ = UP.UpgradePoints_ + points / 10;
+        UP.UpgradePoints_ += points / PointsPerUpgrade;
 
         if (score > highScore)
         {
             highScore = score;
-            PlayerPrefs.SetInt(highScoreKey, highScore);
+            SaveHighScore();
             UpdateHighScoreText();
         }
 
         SetScoreText();
         UP.SetUPText();
+    }
+
+    // Method to set the last score (called before loading DeathScreen)
+    public void SetLastScore()
+    {
+        lastScore = score;
+    }
+
+    private void SaveHighScore()
+    {
+        PlayerPrefs.SetInt(highScoreKey, highScore);
     }
 
     public void ResetHighScore()
@@ -87,6 +105,13 @@ public class ScoreManager : MonoBehaviour
         score = 0;
         SetScoreText();
         UP.SetUPText();
+    }
+
+    // Method to load the DeathScreen scene
+    public void LoadDeathScreen()
+    {
+        SetLastScore(); // Set the last score before transitioning
+        SceneManager.LoadScene("DeathScreen");
     }
 
     void UpdateHighScoreText()
