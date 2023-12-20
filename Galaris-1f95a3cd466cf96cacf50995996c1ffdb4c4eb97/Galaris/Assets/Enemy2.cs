@@ -61,7 +61,7 @@ public class Enemy2 : MonoBehaviour
         {
             yield return new WaitForSeconds(1 / fireRate);
 
-            if (!isFiring)
+            if (!isFiring && currentHealth > 0) // Check if health is greater than 0 before firing
             {
                 isFiring = true;
 
@@ -76,6 +76,7 @@ public class Enemy2 : MonoBehaviour
             }
         }
     }
+
 
     private void SpawnBullet(Transform spawnPoint)
     {
