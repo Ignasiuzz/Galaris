@@ -13,7 +13,6 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private EnemySpawnInfo[] enemyTypes;
     [SerializeField] private float spawnRadius = 10f;
     [SerializeField] private GameObject playerObject; // Reference to the player
-    [SerializeField] private int maxEnemiesToSpawn = 10;
 
     private int numberOfEnemiesSpawned = 0;
 
@@ -31,11 +30,14 @@ public class EnemySpawner : MonoBehaviour
 
     private IEnumerator SpawnEnemiesCoroutine()
     {
-        while (numberOfEnemiesSpawned < maxEnemiesToSpawn)
+        while (true) // Infinite loop for continuous spawning
         {
             foreach (var enemyType in enemyTypes)
             {
-                yield return new WaitForSeconds(enemyType.spawnInterval);
+                // Calculate spawn interval based on the score
+                float adjustedSpawnInterval = enemyType.spawnInterval / (1 + ScoreManager.Instance.Score / 1000f);
+
+                yield return new WaitForSeconds(adjustedSpawnInterval);
 
                 // Calculate a random angle for the enemy spawn position
                 float randomAngle = Random.Range(0f, 360f);
