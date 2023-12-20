@@ -33,6 +33,7 @@ public class Enemy2 : MonoBehaviour
 
     private bool isFiring = false;
     private bool isFlashing = false;
+    private bool isDead = false;
 
     private float flashingDuration = 1.5f;
     private float flashingTimer = 0.0f;
@@ -83,6 +84,7 @@ public class Enemy2 : MonoBehaviour
         GameObject enemyBullet = Instantiate(enemyBulletObject, spawnPoint.position, spawnPoint.rotation);
         enemyBullet.tag = "EnemyBulletClone";
 
+        ShootSoundEffect.Play();
         Rigidbody2D rb = enemyBullet.GetComponent<Rigidbody2D>();
         Vector2 direction = (player.position - spawnPoint.position).normalized;
         rb.velocity = direction * bulletSpeed;
@@ -169,7 +171,8 @@ public class Enemy2 : MonoBehaviour
 
     void Die()
     {
-        //DeathSoundEffect.Play();
+        if (!isDead) isDead = true;
+        DeathSoundEffect.Play();
         currentSpeed = 0;
         EnemyAnimator.SetTrigger("Deatha");
         enemyRigidbody.velocity = Vector2.zero;
@@ -186,6 +189,11 @@ public class Enemy2 : MonoBehaviour
 
     public void Update()
     {
+        if (isDead)
+        {
+            return; // Don't perform any actions if the enemy is dead.
+        }
+
         if (currentHealth <= 0)
         {
             Die();

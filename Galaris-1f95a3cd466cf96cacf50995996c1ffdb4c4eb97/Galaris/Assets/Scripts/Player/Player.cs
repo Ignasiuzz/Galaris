@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
     
     //sound
     [SerializeField] private AudioSource ShootSoundEffect;
-
+    [SerializeField] private AudioSource DeathSoundEffect;
 
     private PlayableArea playableArea; // Reference to the PlayableArea script
     private Quaternion initialRotation;
@@ -43,8 +43,6 @@ public class Player : MonoBehaviour
 
     public float shootCooldown = 0.5f; // The time between shots
     private float lastShootTime = 0f; // The time of the last shot
-
-    UpgradeMenu UpgradeLevel;
 
     void Start()
     {
@@ -63,6 +61,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (isDead)
+        {
+            return; // Don't perform any actions if the enemy is dead.
+        }
 
         if (currentHealth <= 0)
         {
@@ -102,16 +104,13 @@ public class Player : MonoBehaviour
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
         if (!isDead) isDead = true;
+        DeathSoundEffect.Play();
         PlayerAnimator.SetTrigger("Death");
         PlayerSpeed = 0f;
         healthBar.gameObject.SetActive(false);
         PlayerRigidbody.velocity = Vector2.zero;
         PlayerRigidbody.angularVelocity = 0f;
         Debug.Log("Player died!");
-
-        //Player Upgrade Reset
-        UpgradeLevel.GunLevel = 1;
-        UpgradeLevel.HealthLevel = 1;
     }
 
     public void OnDeathAnimationEnd()

@@ -18,15 +18,12 @@ public class HealthPickup : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col){
         addHealth = playerHealth.maxHealth / 10;
-
         if (playerHealth.currentHealth < playerHealth.maxHealth){
-
             Destroy(gameObject);
             Debug.Log("Health Picked Up!");
             playerHealth.currentHealth = playerHealth.currentHealth + addHealth;
             HP.UpdateHealthBar(playerHealth.currentHealth, playerHealth.maxHealth);
             HP.SetHealth(playerHealth.currentHealth);
-
         }
     }
 }
