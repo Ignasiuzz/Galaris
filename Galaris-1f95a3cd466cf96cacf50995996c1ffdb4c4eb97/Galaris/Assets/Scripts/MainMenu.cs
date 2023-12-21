@@ -7,6 +7,9 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
+        ScoreManager.Instance.ResetScore();
+        UpgradeMenu.instance.ResetUpgrades();
+
         SceneManager.LoadSceneAsync(0);
     }
 }

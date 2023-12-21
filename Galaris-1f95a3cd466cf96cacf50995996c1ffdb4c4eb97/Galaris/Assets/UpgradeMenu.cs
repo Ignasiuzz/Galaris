@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UpgradeMenu : MonoBehaviour
 {
@@ -18,8 +19,6 @@ public class UpgradeMenu : MonoBehaviour
     public TextMeshProUGUI HealthLevels;
 
     public Image Image;
-    public GameObject LTouchField;
-    public GameObject RTouchField;
 
     public bool isMenuOpen = false;
     public int HealthLevel = 1;
@@ -30,6 +29,8 @@ public class UpgradeMenu : MonoBehaviour
 
     Player player;
     Health SetMaxHealth;
+
+    public static UpgradeMenu instance;
 
     void Start (){
         //--------Initializes menu buttons-------------------
@@ -48,8 +49,9 @@ public class UpgradeMenu : MonoBehaviour
         MenuButton2.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.0f);
         Image.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.0f);
         GunUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
-        HealthUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+        btn4.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
         //----------------UI text stuff-----------------------------------
+
         UpgradePoints.color = new Color(1f, 1f, 1f, 0f);
         GunUpgradeCost.color = new Color(1f, 1f, 1f, 0f);
         HealthUpgradeCost.color = new Color(1f, 1f, 1f, 0f);
@@ -59,10 +61,25 @@ public class UpgradeMenu : MonoBehaviour
         SetUPText();
         SetWeaponText();
         SetHealthText();
+        Debug.Log("GunLevel: " + GunLevel);
+        Debug.Log("HealthLevel: " + HealthLevel);
+        Debug.Log("GunUpgradeCost: " + GunUpgradeCost_);
+        Debug.Log("HealthUpgradeCost: " + HealthUpgradeCost_);
 
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else{
+            Destroy(gameObject);
+        }
+
+        isMenuOpen = false;
     }
 
     void Awake(){
+
         player = FindObjectOfType<Player>();
         SetMaxHealth = FindObjectOfType<Health>();
     }
@@ -83,9 +100,6 @@ public class UpgradeMenu : MonoBehaviour
             HealthLevels.color = new Color(1f, 1f, 1f, 0f);
 
             Time.timeScale = 1f;
-
-            LTouchField.SetActive(true);
-            RTouchField.SetActive(true);
 
             isMenuOpen = false;
         }
@@ -119,15 +133,13 @@ public class UpgradeMenu : MonoBehaviour
 
             Time.timeScale = 0f;
 
-            LTouchField.SetActive(false);
-            RTouchField.SetActive(false);
-
             isMenuOpen = true;
         }
     }
 
     public void Gun() {
         if (isMenuOpen == true) {
+            Debug.Log("Gun Button pressed !!!");
             float upgradeValue = 0.1f;
             int nextUPcost = 20; 
 
@@ -152,12 +164,15 @@ public class UpgradeMenu : MonoBehaviour
 
     public void Health () {
         if (isMenuOpen == true) {
+            Debug.Log("Health Button pressed!!!");
 
             float upgradeValue = 10f;
             int nextUPcost = 20;
 
             if (HealthLevel <= 3 && HealthUpgradeCost_ <= UpgradePoints_){
+                Debug.Log("Health Upgraded!!!");
                 HealthLevel++;
+                Debug.Log("Health Level ++" + HealthLevel);
                 
                 //------------Set players new max health and heal player to max health----------------
                 player.maxHealth = player.maxHealth + upgradeValue;
@@ -183,24 +198,52 @@ public class UpgradeMenu : MonoBehaviour
     }
 
     void SetWeaponText() {
-        WeaponLevel.text = "Weapon Level: " + GunLevel;
-        GunUpgradeCost.text = "Next Weapon Upgrade Cost: " + GunUpgradeCost_;
-        if (GunLevel == 4){
-            WeaponLevel.text = "Gun Level: MAX";
-            GunUpgradeCost.text = "Next Gun Upgrade Cost: ";
+        if (WeaponLevel != null){
+            WeaponLevel.text = "Weapon Level: " + GunLevel;
+        }
+     
+        if (GunUpgradeCost != null){
+            GunUpgradeCost.text = "Next Weapon Upgrade Cost: " + GunUpgradeCost_;
+            if (GunLevel == 4){
+                WeaponLevel.text = "Gun Level: MAX";
+                GunUpgradeCost.text = "Next Gun Upgrade Cost: ";
+            }
         }
     }
 
     void SetHealthText() {
-        HealthLevels.text = "Health Level: " + HealthLevel;
-        HealthUpgradeCost.text = "Next Health Upgrade Cost: " + HealthUpgradeCost_;
-        if (HealthLevel == 4){
-            HealthLevels.text = "Health Level: MAX";
-            HealthUpgradeCost.text = "Next Health Upgrade Cost: ";
+        if (HealthLevels != null){
+            HealthLevels.text = "Health Level: " + HealthLevel;
+            if (HealthLevel == 4){
+                HealthLevels.text = "Health Level: MAX";
+                HealthUpgradeCost.text = "Next Health Upgrade Cost: ";
+            }
+        }
+
+        if (HealthUpgradeCost != null) {
+            HealthUpgradeCost.text = "Next Health Upgrade Cost: " + HealthUpgradeCost_;
         }
     }
 
     public void SetUPText() {
-        UpgradePoints.text = "Upgrade Points: " + UpgradePoints_;
+        Debug.Log("Points Added: " + UpgradePoints_);
+        
+        if (UpgradePoints != null){
+            UpgradePoints.GetComponent<TextMeshProUGUI>().text = $"Upgrade Points: {UpgradePoints_}";
+        }
     }
+
+     public void ResetUpgrades() {
+        UpgradePoints_ = 0;
+        GunLevel = 1;
+        HealthLevel = 1;
+        HealthUpgradeCost_ = 10;
+        GunUpgradeCost_ = 10;
+
+        SetUPText();
+        SetHealthText();
+        SetWeaponText();
+
+        Debug.Log("Upgrades Reset: ");
+     }
 }

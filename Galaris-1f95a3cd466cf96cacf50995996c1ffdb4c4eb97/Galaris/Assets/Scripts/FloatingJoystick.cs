@@ -40,6 +40,17 @@ public class FloatingJoystick : MonoBehaviour
     private int leftTouch = 99;
     private int rightTouch = 99;
 
+    //public static FloatingJoystick INSTANCE;
+
+    //void Start() {
+       // if (INSTANCE == null)
+       // {
+        //    INSTANCE = this;
+      //      DontDestroyOnLoad(gameObject);
+      //  }
+
+   // }
+
     public void Update()
     {
         int i=0;
