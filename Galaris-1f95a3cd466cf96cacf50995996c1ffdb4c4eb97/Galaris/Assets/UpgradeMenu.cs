@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 public class UpgradeMenu : MonoBehaviour
 {
     public Button MenuButton1;
-    public Button MenuButton2;
     public Button GunUpgrade;
     public Button HealthUpgrade;
     public TextMeshProUGUI UpgradePoints;
@@ -35,18 +34,15 @@ public class UpgradeMenu : MonoBehaviour
     void Start (){
         //--------Initializes menu buttons-------------------
         Button btn = MenuButton1.GetComponent<Button>();
-        Button btn2 = MenuButton2.GetComponent<Button>();
         Button btn3 = GunUpgrade.GetComponent<Button>();
         Button btn4 = HealthUpgrade.GetComponent<Button>();
 
         //--------Links buttons to functions-------------------
-        btn.onClick.AddListener(OnButtonPress);
-        btn2.onClick.AddListener(TaskOnClicka);
+        btn.onClick.AddListener(ToggleMenu);
         btn3.onClick.AddListener(Gun);
         btn4.onClick.AddListener(Health);
 
         //----------------UI button stuff--------------------------------
-        MenuButton2.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.0f);
         Image.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.0f);
         GunUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
         btn4.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
@@ -69,7 +65,6 @@ public class UpgradeMenu : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else{
             Destroy(gameObject);
@@ -84,33 +79,10 @@ public class UpgradeMenu : MonoBehaviour
         SetMaxHealth = FindObjectOfType<Health>();
     }
 
-    public void TaskOnClicka () {
-        Debug.Log("MenuButton2 pressed !!!");
-
-        if (isMenuOpen == true){
-            MenuButton1.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1.0f);
-            MenuButton2.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.0f);
-            GunUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
-            HealthUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
-            Image.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.0f);
-            UpgradePoints.color = new Color(1f, 1f, 1f, 0f);
-            GunUpgradeCost.color = new Color(1f, 1f, 1f, 0f);
-            HealthUpgradeCost.color = new Color(1f, 1f, 1f, 0f);
-            WeaponLevel.color = new Color(1f, 1f, 1f, 0f);
-            HealthLevels.color = new Color(1f, 1f, 1f, 0f);
-
-            Time.timeScale = 1f;
-
-            isMenuOpen = false;
-        }
-    }
-
-    public void OnButtonPress() {
+    public void ToggleMenu() {
         Debug.Log("MenuButton1 pressed !!!");
 
         if (isMenuOpen == false){
-            MenuButton1.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.0f);
-            MenuButton2.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1.0f);
             UpgradePoints.color = new Color(1f, 1f, 1f, 1f);
             GunUpgradeCost.color = new Color(1f, 1f, 1f, 1f);
             HealthUpgradeCost.color = new Color(1f, 1f, 1f, 1f);
@@ -134,6 +106,20 @@ public class UpgradeMenu : MonoBehaviour
             Time.timeScale = 0f;
 
             isMenuOpen = true;
+        }
+        else {
+            GunUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+            HealthUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+            Image.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.0f);
+            UpgradePoints.color = new Color(1f, 1f, 1f, 0f);
+            GunUpgradeCost.color = new Color(1f, 1f, 1f, 0f);
+            HealthUpgradeCost.color = new Color(1f, 1f, 1f, 0f);
+            WeaponLevel.color = new Color(1f, 1f, 1f, 0f);
+            HealthLevels.color = new Color(1f, 1f, 1f, 0f);
+
+            Time.timeScale = 1f;
+
+            isMenuOpen = false;
         }
     }
 
