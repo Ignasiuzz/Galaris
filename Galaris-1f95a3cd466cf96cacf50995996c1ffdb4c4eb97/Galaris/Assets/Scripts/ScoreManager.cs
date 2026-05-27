@@ -71,6 +71,7 @@ public class ScoreManager : MonoBehaviour
 
         SetScoreText();
         UP.SetUPText();
+        LevelManager.Instance?.RegisterEnemyKilled();
     }
 
     // Method to set the last score (called before loading DeathScreen)
