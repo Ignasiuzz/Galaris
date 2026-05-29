@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class PlayerBullet : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private float lifetime = 4f;
+
     void Start()
     {
-        
+        Invoke(nameof(DestroyBullet), lifetime);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        CancelInvoke(nameof(DestroyBullet));
+        Destroy(gameObject);
+    }
+
+    private void DestroyBullet()
+    {
+        Destroy(gameObject);
     }
 }

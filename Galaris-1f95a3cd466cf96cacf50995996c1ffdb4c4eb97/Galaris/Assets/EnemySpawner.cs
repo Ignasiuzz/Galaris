@@ -14,30 +14,84 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnRadius = 10f;
     [SerializeField] private GameObject playerObject; // Reference to the player
 
+    private ScoreManager scoreManager;
     private int numberOfEnemiesSpawned = 0;
 
     // Start is called before the first frame update
     void Start()
     {
+        RefreshSceneReferences();
+
         if (playerObject == null)
         {
-            Debug.LogError("Player object not assigned in the inspector.");
-            return;
+            Debug.LogWarning("EnemySpawner: Player object not found yet. Spawning will wait until a player exists.");
         }
 
         StartCoroutine(SpawnEnemiesCoroutine());
+    }
+
+    private void RefreshSceneReferences()
+    {
+        if (playerObject == null)
+        {
+            Player player = FindObjectOfType<Player>();
+            if (player != null)
+            {
+                playerObject = player.gameObject;
+            }
+            else
+            {
+                playerObject = GameObject.FindGameObjectWithTag("Player");
+            }
+        }
+
+        if (scoreManager == null)
+        {
+            scoreManager = ScoreManager.Instance;
+            if (scoreManager == null)
+            {
+                scoreManager = FindObjectOfType<ScoreManager>();
+            }
+        }
     }
 
     private IEnumerator SpawnEnemiesCoroutine()
     {
         while (true) // Infinite loop for continuous spawning
         {
+            RefreshSceneReferences();
+
+            if (playerObject == null)
+            {
+                yield return null;
+                continue;
+            }
+
+            if (enemyTypes == null || enemyTypes.Length == 0)
+            {
+                yield return null;
+                continue;
+            }
+
             foreach (var enemyType in enemyTypes)
             {
+                if (enemyType == null || enemyType.enemyPrefab == null)
+                {
+                    continue;
+                }
+
                 // Calculate spawn interval based on the score
-                float adjustedSpawnInterval = enemyType.spawnInterval / (1 + ScoreManager.Instance.Score / 1000f);
+                int score = scoreManager != null ? scoreManager.Score : 0;
+                float adjustedSpawnInterval = enemyType.spawnInterval / (1 + score / 1000f);
 
                 yield return new WaitForSeconds(adjustedSpawnInterval);
+
+                RefreshSceneReferences();
+
+                if (playerObject == null)
+                {
+                    continue;
+                }
 
                 // Calculate a random angle for the enemy spawn position
                 float randomAngle = Random.Range(0f, 360f);
@@ -54,7 +108,7 @@ public class EnemySpawner : MonoBehaviour
                 if (enemyScript != null)
                 {
                     Animator newEnemyAnimator = newEnemy.GetComponent<Animator>();
-                    if (newEnemyAnimator != null)
+                    if (newEnemyAnimator != null && enemyScript.EnemyAnimator != null)
                     {
                         newEnemyAnimator.runtimeAnimatorController = enemyScript.EnemyAnimator.runtimeAnimatorController;
                     }

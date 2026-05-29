@@ -5,6 +5,10 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance;
 
+    private readonly string[] levelScenes = { "Game", "Level2", "Level3" };
+
+    [SerializeField] private int[] enemiesNeededPerLevel = { 20, 30, 40 };
+
     public int currentLevel = 1;
     private int enemiesKilled = 0;
     private int enemiesNeededForLevelUp;
@@ -27,7 +31,7 @@ public class LevelManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name != "Game" && scene.name != "Level2")
+        if (!IsGameplayScene(scene.name))
         {
             Destroy(gameObject);
             Instance = null;
@@ -41,6 +45,13 @@ public class LevelManager : MonoBehaviour
 
     private void CalculateEnemiesNeeded()
     {
+        int levelIndex = currentLevel - 1;
+        if (levelIndex >= 0 && levelIndex < enemiesNeededPerLevel.Length)
+        {
+            enemiesNeededForLevelUp = Mathf.Max(1, enemiesNeededPerLevel[levelIndex]);
+            return;
+        }
+
         enemiesNeededForLevelUp = 10 + (currentLevel * 10);
     }
 
@@ -57,19 +68,33 @@ public class LevelManager : MonoBehaviour
 
     private void LevelUp()
     {
+        if (currentLevel >= levelScenes.Length)
+        {
+            enemiesKilled = 0;
+            CalculateEnemiesNeeded();
+            Debug.Log("Already on the final level.");
+            return;
+        }
+
         currentLevel++;
         enemiesKilled = 0;
         CalculateEnemiesNeeded();
         Debug.Log($"Level up! Now on Level {currentLevel}");
+        UpgradeMenu.instance?.CarryCurrentPlayerHealth();
+        LoadingScreen.LoadScene(levelScenes[currentLevel - 1]);
+    }
 
-        if (currentLevel == 2)
+    private bool IsGameplayScene(string sceneName)
+    {
+        foreach (string levelScene in levelScenes)
         {
-            SceneManager.LoadScene("Level2");
+            if (sceneName == levelScene)
+            {
+                return true;
+            }
         }
-        else
-        {
-            SceneManager.LoadScene("Game");
-        }
+
+        return false;
     }
 
     public float GetLevelProgress()

@@ -84,7 +84,7 @@ public class Enemy2 : MonoBehaviour
         GameObject enemyBullet = Instantiate(enemyBulletObject, spawnPoint.position, spawnPoint.rotation);
         enemyBullet.tag = "EnemyBulletClone";
 
-        ShootSoundEffect.Play();
+        SfxLimiter.TryPlay(ShootSoundEffect, "enemy_shoot", 0.05f, 3, 0.2f);
         Rigidbody2D rb = enemyBullet.GetComponent<Rigidbody2D>();
         Vector2 direction = (player.position - spawnPoint.position).normalized;
         rb.velocity = direction * bulletSpeed;
@@ -172,7 +172,7 @@ public class Enemy2 : MonoBehaviour
     void Die()
     {
         if (!isDead) isDead = true;
-        DeathSoundEffect.Play();
+        SfxLimiter.TryPlay(DeathSoundEffect, "enemy_death", 0.08f, 2, 0.25f);
         currentSpeed = 0;
         EnemyAnimator.SetTrigger("Deatha");
         enemyRigidbody.velocity = Vector2.zero;

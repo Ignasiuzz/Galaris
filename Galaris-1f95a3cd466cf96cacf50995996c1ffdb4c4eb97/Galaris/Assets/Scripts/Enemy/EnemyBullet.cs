@@ -4,23 +4,38 @@ using UnityEngine;
 
 public class EnemyBullet : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private const int EnemyLayer = 3;
+    private const int PlayerLayer = 6;
+    private const int PlayerBulletLayer = 7;
+    private const int EnemyBulletLayer = 9;
+
     void Start()
     {
-        // Schedule the destruction of the bullet after 8 seconds
         Invoke("DestroyBullet", 4f);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Cancel the scheduled destruction since a collision occurred
-        CancelInvoke("DestroyBullet");
+        int otherLayer = other.gameObject.layer;
+        if (otherLayer == EnemyLayer || otherLayer == EnemyBulletLayer || otherLayer == PlayerBulletLayer)
+        {
+            return;
+        }
 
-        // Destroy the bullet
+        CancelInvoke(nameof(DestroyBullet));
+
+        if (otherLayer == PlayerLayer)
+        {
+            Player player = other.GetComponent<Player>();
+            if (player != null)
+            {
+                player.TakeDamage(1f);
+            }
+        }
+
         Destroy(gameObject);
     }
 
-    // Method to destroy the bullet
     void DestroyBullet()
     {
         Destroy(gameObject);

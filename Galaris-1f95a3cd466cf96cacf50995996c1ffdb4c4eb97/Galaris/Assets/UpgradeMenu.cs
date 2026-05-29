@@ -23,13 +23,34 @@ public class UpgradeMenu : MonoBehaviour
     public int HealthLevel = 1;
     public int GunLevel = 1;
     public int UpgradePoints_ = 0;
-    public int GunUpgradeCost_ = 10;
-    public int HealthUpgradeCost_ = 10;
+    public int GunUpgradeCost_ = 5;
+    public int HealthUpgradeCost_ = 5;
+    private const int CostIncrement = 5;
+    private const float BasePlayerMaxHealth = 10f;
+    private const float HealthUpgradeValue = 10f;
+    private const float BaseShootCooldown = 0.5f;
+    private const float GunUpgradeValue = 0.1f;
 
     Player player;
     Health SetMaxHealth;
+    private bool hasCarriedHealth = false;
+    private float carriedCurrentHealth;
 
     public static UpgradeMenu instance;
+
+    void Awake(){
+
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        RefreshSceneReferences();
+    }
 
     void Start (){
         //--------Initializes menu buttons-------------------
@@ -62,21 +83,81 @@ public class UpgradeMenu : MonoBehaviour
         Debug.Log("GunUpgradeCost: " + GunUpgradeCost_);
         Debug.Log("HealthUpgradeCost: " + HealthUpgradeCost_);
 
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else{
-            Destroy(gameObject);
-        }
-
         isMenuOpen = false;
     }
 
-    void Awake(){
+    void OnDestroy()
+    {
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
 
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(ApplyUpgradesAfterSceneLoad());
+    }
+
+    private IEnumerator ApplyUpgradesAfterSceneLoad()
+    {
+        yield return null;
+        RefreshSceneReferences();
+        ApplyCurrentUpgradesToPlayer(false);
+    }
+
+    private void RefreshSceneReferences(){
         player = FindObjectOfType<Player>();
         SetMaxHealth = FindObjectOfType<Health>();
+    }
+
+    public void CarryCurrentPlayerHealth()
+    {
+        if (player == null)
+        {
+            RefreshSceneReferences();
+        }
+
+        if (player == null)
+        {
+            return;
+        }
+
+        carriedCurrentHealth = Mathf.Clamp(player.currentHealth, 0f, player.maxHealth);
+        hasCarriedHealth = true;
+    }
+
+    public void ApplyCurrentUpgradesToPlayer(bool healToFull)
+    {
+        if (player == null)
+        {
+            RefreshSceneReferences();
+        }
+
+        if (player == null)
+        {
+            return;
+        }
+
+        player.shootCooldown = BaseShootCooldown - ((GunLevel - 1) * GunUpgradeValue);
+        player.maxHealth = BasePlayerMaxHealth + ((HealthLevel - 1) * HealthUpgradeValue);
+
+        if (hasCarriedHealth)
+        {
+            player.currentHealth = Mathf.Clamp(carriedCurrentHealth, 0f, player.maxHealth);
+            hasCarriedHealth = false;
+        }
+        else if (healToFull || player.currentHealth > player.maxHealth)
+        {
+            player.currentHealth = player.maxHealth;
+        }
+
+        if (SetMaxHealth != null)
+        {
+            SetMaxHealth.SetMaxHealth(player.maxHealth);
+            SetMaxHealth.UpdateHealthBar(player.currentHealth, player.maxHealth);
+            SetMaxHealth.SetHealth(player.currentHealth);
+        }
     }
 
     public void ToggleMenu() {
@@ -89,16 +170,16 @@ public class UpgradeMenu : MonoBehaviour
             WeaponLevel.color = new Color(1f, 1f, 1f, 1f);
             HealthLevels.color = new Color(1f, 1f, 1f, 1f);
 
-            if (HealthLevel == 4) {
+            if (HealthLevel == 12) {
                 HealthUpgrade.GetComponent<Image>().color = new Color(1f, 0f, 0f, 0.3f);
             }
-            if (GunLevel == 4) {
+            if (GunLevel == 12) {
                 GunUpgrade.GetComponent<Image>().color = new Color(1f, 0f, 0f, 0.3f);
             }
-            if (GunLevel < 3) {
+            if (GunLevel < 11) {
                 GunUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
             }
-            if (HealthLevel < 3) {
+            if (HealthLevel < 11) {
                 HealthUpgrade.GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
             }
             Image.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.95f);
@@ -126,15 +207,13 @@ public class UpgradeMenu : MonoBehaviour
     public void Gun() {
         if (isMenuOpen == true) {
             Debug.Log("Gun Button pressed !!!");
-            float upgradeValue = 0.1f;
-            int nextUPcost = 20; 
 
-            if (GunLevel <= 3 && GunUpgradeCost_ <= UpgradePoints_) {
+            if (GunLevel <= 11 && GunUpgradeCost_ <= UpgradePoints_) {
                 GunLevel = GunLevel + 1;
-                player.shootCooldown = player.shootCooldown - upgradeValue;
+                ApplyCurrentUpgradesToPlayer(false);
 
                 UpgradePoints_ = UpgradePoints_ - GunUpgradeCost_;
-                GunUpgradeCost_ = GunUpgradeCost_ + nextUPcost;
+                GunUpgradeCost_ = GunUpgradeCost_ + CostIncrement;
 
                 SetWeaponText();
                 SetUPText();
@@ -142,7 +221,7 @@ public class UpgradeMenu : MonoBehaviour
                 Debug.Log("Gun Upgraded!!!");
             }
 
-            if (GunLevel == 4){
+            if (GunLevel == 12){
                 GunUpgrade.GetComponent<Image>().color = new Color(1f, 0f, 0f, 0.3f);
             }
         }
@@ -152,32 +231,23 @@ public class UpgradeMenu : MonoBehaviour
         if (isMenuOpen == true) {
             Debug.Log("Health Button pressed!!!");
 
-            float upgradeValue = 10f;
-            int nextUPcost = 20;
-
-            if (HealthLevel <= 3 && HealthUpgradeCost_ <= UpgradePoints_){
+            if (HealthLevel <= 11 && HealthUpgradeCost_ <= UpgradePoints_){
                 Debug.Log("Health Upgraded!!!");
                 HealthLevel++;
                 Debug.Log("Health Level ++" + HealthLevel);
-                
-                //------------Set players new max health and heal player to max health----------------
-                player.maxHealth = player.maxHealth + upgradeValue;
-                player.currentHealth = player.maxHealth;
 
-                //------------Update Health slyder to new max health value----------------------------
-                SetMaxHealth.SetMaxHealth(player.maxHealth);
-                SetMaxHealth.UpdateHealthBar(player.currentHealth, player.maxHealth);
-                SetMaxHealth.SetHealth(player.currentHealth);
+                //------------Set players new max health and heal player to max health----------------
+                ApplyCurrentUpgradesToPlayer(true);
 
                 UpgradePoints_ = UpgradePoints_ - HealthUpgradeCost_;
-                HealthUpgradeCost_ = HealthUpgradeCost_ + nextUPcost;
+                HealthUpgradeCost_ = HealthUpgradeCost_ + CostIncrement;
 
                 SetHealthText();
                 SetUPText();
                 Debug.Log("Health Upgraded!!!");
             }
 
-            if (HealthLevel == 4){
+            if (HealthLevel == 12){
                 HealthUpgrade.GetComponent<Image>().color = new Color(1f, 0f, 0f, 0.3f);
             }
         }
@@ -187,10 +257,10 @@ public class UpgradeMenu : MonoBehaviour
         if (WeaponLevel != null){
             WeaponLevel.text = "Weapon Level: " + GunLevel;
         }
-     
+
         if (GunUpgradeCost != null){
             GunUpgradeCost.text = "Next Weapon Upgrade Cost: " + GunUpgradeCost_;
-            if (GunLevel == 4){
+            if (GunLevel == 12){
                 WeaponLevel.text = "Gun Level: MAX";
                 GunUpgradeCost.text = "Next Gun Upgrade Cost: ";
             }
@@ -200,14 +270,17 @@ public class UpgradeMenu : MonoBehaviour
     void SetHealthText() {
         if (HealthLevels != null){
             HealthLevels.text = "Health Level: " + HealthLevel;
-            if (HealthLevel == 4){
+            if (HealthLevel == 12){
                 HealthLevels.text = "Health Level: MAX";
-                HealthUpgradeCost.text = "Next Health Upgrade Cost: ";
             }
         }
 
         if (HealthUpgradeCost != null) {
-            HealthUpgradeCost.text = "Next Health Upgrade Cost: " + HealthUpgradeCost_;
+            if (HealthLevel == 12) {
+                HealthUpgradeCost.text = "Next Health Upgrade Cost: ";
+            } else {
+                HealthUpgradeCost.text = "Next Health Upgrade Cost: " + HealthUpgradeCost_;
+            }
         }
     }
 
@@ -229,6 +302,7 @@ public class UpgradeMenu : MonoBehaviour
         SetUPText();
         SetHealthText();
         SetWeaponText();
+        ApplyCurrentUpgradesToPlayer(true);
 
         Debug.Log("Upgrades Reset: ");
      }

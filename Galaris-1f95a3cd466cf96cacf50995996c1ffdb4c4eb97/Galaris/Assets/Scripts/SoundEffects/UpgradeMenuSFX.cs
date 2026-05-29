@@ -10,12 +10,12 @@ public class UpgradeMenuSFX : MonoBehaviour
     public void MenuButton()
     {
     SFX.clip = UpgradeMenuOpen;
-    SFX.Play();
+    SfxLimiter.TryPlay(SFX, "ui_menu", 0.1f, 1, 0.1f);
     }
 
     public void UpgradeButton()
     {
     SFX.clip = PurchaseUpgrade;
-    SFX.Play();
+    SfxLimiter.TryPlay(SFX, "ui_purchase", 0.08f, 2, 0.15f);
     }
 }

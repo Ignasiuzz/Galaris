@@ -11,23 +11,49 @@ public class SpawnableObject
 
 public class ObjectSpawner : MonoBehaviour
 {
-    public int poolSize = 10; // Number of objects in the pool
+    private class PooledObject
+    {
+        public GameObject Instance;
+        public int PrefabIndex;
+        public float Radius;
+    }
+
+    public int poolSize = 30; // Number of objects in the pool
     public float spawnDistanceMin = 5f;
     public float spawnDistanceMax = 10f;
     public float unloadDistance = 20f;
-    public float spawnInterval = 5f;
-    public int objectsToSpawn = 3; // Number of objects to spawn each time
-    public float minDistanceBetweenObjects = 1f; // Minimum distance between spawned objects
+    public float spawnInterval = 1f;
+    public int objectsToSpawn = 5; // Number of objects to spawn each time
+    public float minDistanceBetweenObjects = 3f; // Extra padding between spawned objects
     public List<SpawnableObject> spawnableObjects = new List<SpawnableObject>(); // List of spawnable prefabs
 
     [Header("Player Settings")]
     [SerializeField]
     private Transform playerTransform; // Player transform
 
-    private List<GameObject> objectPool = new List<GameObject>();
+    private List<PooledObject> objectPool = new List<PooledObject>();
 
     void Start()
     {
+        if (spawnableObjects.Count == 0)
+        {
+            Debug.LogError("ObjectSpawner has no spawnable objects configured.");
+            enabled = false;
+            return;
+        }
+
+        if (playerTransform == null)
+        {
+            playerTransform = GameObject.FindGameObjectWithTag("Player")?.transform;
+        }
+
+        if (playerTransform == null)
+        {
+            Debug.LogError("ObjectSpawner could not find the player transform.");
+            enabled = false;
+            return;
+        }
+
         InitializeObjectPool();
         StartCoroutine(SpawnObjectsRoutine());
     }
@@ -36,9 +62,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject obj = Instantiate(spawnableObjects[0].prefab, Vector3.zero, Quaternion.identity);
-            obj.SetActive(false);
-            objectPool.Add(obj);
+            objectPool.Add(CreatePooledObject(GetRandomPrefabIndex()));
         }
     }
 
@@ -46,6 +70,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         while (true)
         {
+            DespawnDistantObjects();
             SpawnObjects(objectsToSpawn); // Specify the number of objects to spawn
             yield return new WaitForSeconds(spawnInterval);
         }
@@ -55,60 +80,123 @@ public class ObjectSpawner : MonoBehaviour
     {
         for (int i = 0; i < numberOfObjects; i++)
         {
-            for (int j = 0; j < objectPool.Count; j++)
+            int prefabIndex = GetRandomPrefabIndex();
+            PooledObject pooledObject = GetAvailableObject();
+            if (pooledObject == null)
             {
-                if (!objectPool[j].activeInHierarchy)
+                break;
+            }
+
+            EnsurePrefabType(pooledObject, prefabIndex);
+            float candidateRadius = pooledObject.Radius;
+
+            for (int attempt = 0; attempt < objectPool.Count; attempt++)
+            {
+                float randomDistance = Random.Range(spawnDistanceMin, spawnDistanceMax);
+                float randomAngle = Random.Range(0f, 360f);
+
+                Vector3 randomOffset = new Vector3(Mathf.Cos(randomAngle * Mathf.Deg2Rad), Mathf.Sin(randomAngle * Mathf.Deg2Rad)) * randomDistance;
+                Vector3 randomPosition = playerTransform.position + randomOffset;
+
+                float minProximity = 2f + candidateRadius;
+                if (Vector3.Distance(randomPosition, playerTransform.position) < minProximity)
                 {
-                    float randomDistance = Random.Range(spawnDistanceMin, spawnDistanceMax);
-                    float randomAngle = Random.Range(0f, 360f);
-
-                    // Calculate the random position around the player in the x and y plane
-                    Vector3 randomOffset = new Vector3(Mathf.Cos(randomAngle * Mathf.Deg2Rad), Mathf.Sin(randomAngle * Mathf.Deg2Rad)) * randomDistance;
-                    Vector3 randomPosition = playerTransform.position + randomOffset;
-
-                    // Check if the distance to the player is greater than a minimum proximity
-                    float minProximity = 2f; // Adjust this value based on your preferences
-                    if (Vector3.Distance(randomPosition, playerTransform.position) < minProximity)
-                    {
-                        continue; // Skip this iteration and try again
-                    }
-
-                    // Check if the new object overlaps with existing objects
-                    bool overlap = false;
-                    for (int k = 0; k < objectPool.Count; k++)
-                    {
-                        if (objectPool[k].activeInHierarchy)
-                        {
-                            float distanceBetweenObjects = Vector3.Distance(randomPosition, objectPool[k].transform.position);
-
-                            if (distanceBetweenObjects < minDistanceBetweenObjects)
-                            {
-                                overlap = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (overlap)
-                    {
-                        continue; // Skip this iteration and try again
-                    }
-
-                    // Randomly select a spawnable prefab
-                    GameObject selectedPrefab = GetRandomPrefab();
-
-                    // Spawn the selected prefab
-                    objectPool[j] = Instantiate(selectedPrefab, randomPosition, Quaternion.identity);
-                    objectPool[j].SetActive(true);
-
-                    // Optional: You can perform additional setup on the spawned object if needed
-                    break; // Break out of the loop after spawning one object
+                    continue;
                 }
+
+                bool overlap = false;
+                for (int k = 0; k < objectPool.Count; k++)
+                {
+                    if (!objectPool[k].Instance.activeInHierarchy)
+                    {
+                        continue;
+                    }
+
+                    float distanceBetweenObjects = Vector3.Distance(randomPosition, objectPool[k].Instance.transform.position);
+                    float requiredSpacing = candidateRadius + objectPool[k].Radius + minDistanceBetweenObjects;
+                    if (distanceBetweenObjects < requiredSpacing)
+                    {
+                        overlap = true;
+                        break;
+                    }
+                }
+
+                if (overlap)
+                {
+                    continue;
+                }
+
+                pooledObject.Instance.transform.position = randomPosition;
+                pooledObject.Instance.SetActive(true);
+                break;
             }
         }
     }
 
-    GameObject GetRandomPrefab()
+    PooledObject CreatePooledObject(int prefabIndex)
+    {
+        GameObject obj = Instantiate(spawnableObjects[prefabIndex].prefab, Vector3.zero, Quaternion.identity);
+        obj.SetActive(false);
+
+        return new PooledObject
+        {
+            Instance = obj,
+            PrefabIndex = prefabIndex,
+            Radius = GetObjectRadius(obj)
+        };
+    }
+
+    void EnsurePrefabType(PooledObject pooledObject, int prefabIndex)
+    {
+        if (pooledObject.PrefabIndex == prefabIndex)
+        {
+            return;
+        }
+
+        Destroy(pooledObject.Instance);
+        pooledObject.Instance = Instantiate(spawnableObjects[prefabIndex].prefab, Vector3.zero, Quaternion.identity);
+        pooledObject.Instance.SetActive(false);
+        pooledObject.PrefabIndex = prefabIndex;
+        pooledObject.Radius = GetObjectRadius(pooledObject.Instance);
+    }
+
+    PooledObject GetAvailableObject()
+    {
+        for (int i = 0; i < objectPool.Count; i++)
+        {
+            if (!objectPool[i].Instance.activeInHierarchy)
+            {
+                return objectPool[i];
+            }
+        }
+
+        PooledObject farthestObject = null;
+        float farthestDistance = spawnDistanceMax;
+
+        for (int i = 0; i < objectPool.Count; i++)
+        {
+            if (!objectPool[i].Instance.activeInHierarchy)
+            {
+                continue;
+            }
+
+            float distanceToPlayer = Vector3.Distance(objectPool[i].Instance.transform.position, playerTransform.position);
+            if (distanceToPlayer > farthestDistance)
+            {
+                farthestDistance = distanceToPlayer;
+                farthestObject = objectPool[i];
+            }
+        }
+
+        if (farthestObject != null)
+        {
+            farthestObject.Instance.SetActive(false);
+        }
+
+        return farthestObject;
+    }
+
+    int GetRandomPrefabIndex()
     {
         float totalProbability = 0f;
 
@@ -122,29 +210,59 @@ public class ObjectSpawner : MonoBehaviour
         float cumulativeProbability = 0f;
 
         // Choose the prefab based on the random value and spawn probabilities
-        foreach (var spawnableObject in spawnableObjects)
+        for (int i = 0; i < spawnableObjects.Count; i++)
         {
+            SpawnableObject spawnableObject = spawnableObjects[i];
             cumulativeProbability += spawnableObject.spawnProbability;
 
             if (randomValue <= cumulativeProbability)
             {
-                return spawnableObject.prefab;
+                return i;
             }
         }
 
-        // If for some reason the loop did not return a prefab, return the first one
-        return spawnableObjects[0].prefab;
+        return 0;
+    }
+
+    float GetObjectRadius(GameObject obj)
+    {
+        CircleCollider2D circleCollider = obj.GetComponent<CircleCollider2D>();
+        if (circleCollider != null)
+        {
+            Vector3 scale = obj.transform.lossyScale;
+            float maxScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+            return circleCollider.radius * maxScale;
+        }
+
+        Collider2D collider2D = obj.GetComponent<Collider2D>();
+        if (collider2D != null)
+        {
+            return Mathf.Max(collider2D.bounds.extents.x, collider2D.bounds.extents.y);
+        }
+
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            return Mathf.Max(spriteRenderer.bounds.extents.x, spriteRenderer.bounds.extents.y);
+        }
+
+        return minDistanceBetweenObjects * 0.5f;
     }
 
     void Update()
     {
+        DespawnDistantObjects();
+    }
+
+    void DespawnDistantObjects()
+    {
         for (int i = 0; i < objectPool.Count; i++)
         {
-            float distanceToPlayer = Vector3.Distance(objectPool[i].transform.position, playerTransform.position);
+            float distanceToPlayer = Vector3.Distance(objectPool[i].Instance.transform.position, playerTransform.position);
 
             if (distanceToPlayer > unloadDistance)
             {
-                objectPool[i].SetActive(false);
+                objectPool[i].Instance.SetActive(false);
             }
         }
     }

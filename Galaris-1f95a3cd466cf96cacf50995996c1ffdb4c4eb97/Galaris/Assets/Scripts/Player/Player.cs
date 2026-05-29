@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     public Animator PlayerAnimator;
     private Rigidbody2D PlayerRigidbody;
     private Collider2D PlayerCollider;
+    private SpriteRenderer playerSpriteRenderer;
     public Health healthBar;
 
     private float enemyDamage = 1f;
@@ -43,6 +44,10 @@ public class Player : MonoBehaviour
 
     public float shootCooldown = 0.5f; // The time between shots
     private float lastShootTime = 0f; // The time of the last shot
+    private float movementSpeedMultiplier = 1f;
+    private Coroutine movementSlowRoutine;
+    private Color defaultPlayerColor = Color.white;
+    private static readonly Color FrozenPlayerColor = new Color(0.55f, 0.75f, 1f, 0.8f);
 
     void Start()
     {
@@ -50,13 +55,18 @@ public class Player : MonoBehaviour
         initialRotation = transform.rotation;
         playableArea = GameObject.FindObjectOfType<PlayableArea>();
         rb = GetComponent<Rigidbody2D>();
+        RefreshSceneReferences();
         currentHealth = maxHealth;
-        healthBar = FindObjectOfType<Health>();
-        healthbar = FindObjectOfType<Health>();
         healthBar.UpdateHealthBar(currentHealth, maxHealth);
         healthbar.SetMaxHealth(maxHealth);
         PlayerRigidbody = GetComponent<Rigidbody2D>();
         PlayerCollider = GetComponent<Collider2D>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (playerSpriteRenderer != null)
+        {
+            defaultPlayerColor = playerSpriteRenderer.color;
+        }
+        UpgradeMenu.instance?.ApplyCurrentUpgradesToPlayer(true);
     }
 
     void Update()
@@ -79,9 +89,17 @@ public class Player : MonoBehaviour
         {
             Debug.Log("Enemy bullet collided with the player");
 
-            // Destroy the enemyBullet
+            FreezingEnemyBullet freezingBullet = collision.gameObject.GetComponent<FreezingEnemyBullet>();
+            if (freezingBullet != null)
+            {
+                freezingBullet.ApplyToPlayer(this);
+            }
+            else
+            {
+                TakeDamage(enemyDamage);
+            }
+
             Destroy(collision.gameObject);
-            TakeDamage(enemyDamage);
 
             // Optionally, add any additional logic or effects for when the player is hit by an enemy bullet.
             // For example, decrease the player's health, play a particle effect, etc.
@@ -99,12 +117,24 @@ public class Player : MonoBehaviour
         healthbar.SetHealth(currentHealth);
     }
 
+    public void ApplyMovementSlow(float speedMultiplier, float duration)
+    {
+        float clampedMultiplier = Mathf.Clamp(speedMultiplier, 0.05f, 1f);
+
+        if (movementSlowRoutine != null)
+        {
+            StopCoroutine(movementSlowRoutine);
+        }
+
+        movementSlowRoutine = StartCoroutine(ApplyMovementSlowRoutine(clampedMultiplier, duration));
+    }
+
     void Die()
     {
         // You can add any death-related logic here, like showing the death screen or restarting the game.
         // For now, let's just print a message and load the death screen.
         if (!isDead) isDead = true;
-        DeathSoundEffect.Play();
+        SfxLimiter.TryPlay(DeathSoundEffect, "player_death", 0.5f, 1, 1f);
         PlayerAnimator.SetTrigger("Death");
         PlayerSpeed = 0f;
         healthBar.gameObject.SetActive(false);
@@ -125,9 +155,39 @@ public class Player : MonoBehaviour
         Movement();
         ApplySteering();
     }
+
+    private void RefreshSceneReferences()
+    {
+        if (FloatingJoystick == null)
+        {
+            FloatingJoystick = FindObjectOfType<FloatingJoystick>();
+        }
+
+        if (healthBar == null)
+        {
+            healthBar = FindObjectOfType<Health>();
+        }
+
+        if (healthbar == null)
+        {
+            healthbar = FindObjectOfType<Health>();
+        }
+    }
+
     void Movement()
     {
-        Vector2 targetVelocity = new Vector2(FloatingJoystick.LHorizontal * PlayerSpeed, FloatingJoystick.LVertical * PlayerSpeed);
+        if (FloatingJoystick == null)
+        {
+            RefreshSceneReferences();
+        }
+
+        if (FloatingJoystick == null)
+        {
+            rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, Time.fixedDeltaTime * decelerationFactor);
+            return;
+        }
+
+        Vector2 targetVelocity = new Vector2(FloatingJoystick.LHorizontal * PlayerSpeed * movementSpeedMultiplier, FloatingJoystick.LVertical * PlayerSpeed * movementSpeedMultiplier);
 
         // Apply acceleration
         rb.velocity = Vector2.Lerp(rb.velocity, targetVelocity, Time.fixedDeltaTime * accelerationFactor);
@@ -139,8 +199,42 @@ public class Player : MonoBehaviour
         }
     }
 
+    private IEnumerator ApplyMovementSlowRoutine(float speedMultiplier, float duration)
+    {
+        movementSpeedMultiplier = speedMultiplier;
+        SetPlayerFrozenVisual(true);
+        yield return new WaitForSeconds(duration);
+        movementSpeedMultiplier = 1f;
+        SetPlayerFrozenVisual(false);
+        movementSlowRoutine = null;
+    }
+
+    private void SetPlayerFrozenVisual(bool isFrozen)
+    {
+        if (playerSpriteRenderer == null)
+        {
+            playerSpriteRenderer = GetComponent<SpriteRenderer>();
+            if (playerSpriteRenderer != null)
+            {
+                defaultPlayerColor = playerSpriteRenderer.color;
+            }
+        }
+
+        if (playerSpriteRenderer == null)
+        {
+            return;
+        }
+
+        playerSpriteRenderer.color = isFrozen ? FrozenPlayerColor : defaultPlayerColor;
+    }
+
     void ApplySteering()
     {
+        if (FloatingJoystick == null)
+        {
+            RefreshSceneReferences();
+        }
+
         if (rb.velocity.magnitude > 0.1f) // Check if the player is moving
         {
             float angle = Mathf.Atan2(rb.velocity.y, rb.velocity.x) * Mathf.Rad2Deg;
@@ -148,14 +242,14 @@ public class Player : MonoBehaviour
         }
 
 
-        if (FloatingJoystick.Rinput != Vector2.zero)
+        if (FloatingJoystick != null && FloatingJoystick.Rinput != Vector2.zero)
         {
             float angle = Mathf.Atan2(FloatingJoystick.RVertical, FloatingJoystick.RHorizontal) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
             if (Time.time - lastShootTime >= shootCooldown)
             {   
-                ShootSoundEffect.Play();
+                SfxLimiter.TryPlay(ShootSoundEffect, "player_shoot", 0.04f, 4, 0.18f);
                 // Call the Shoot function in the Player script here.
                 GetComponent<Shooting>().Shoot();
                 // Update the last shot time
