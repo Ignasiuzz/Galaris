@@ -8,6 +8,7 @@ public class LevelUI : MonoBehaviour
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI killCountText;
     private Image fillImage;
+    private Image panelImage;
 
     private float targetValue = 0f;
     private float smoothSpeed = 5f;
@@ -26,6 +27,7 @@ public class LevelUI : MonoBehaviour
             return;
         }
 
+        panelImage = GetComponent<Image>();
         fillImage = levelSlider.fillRect.GetComponent<Image>();
         UpdateLevelDisplay();
     }
@@ -46,11 +48,44 @@ public class LevelUI : MonoBehaviour
         if (LevelManager.Instance == null)
             return;
 
+        bool isEndlessMode = LevelManager.Instance.IsEndlessMode();
+        if (panelImage != null)
+        {
+            panelImage.enabled = !isEndlessMode;
+        }
+
+        if (isEndlessMode)
+        {
+            levelText.text = "Level ∞";
+
+            if (killCountText != null)
+            {
+                killCountText.gameObject.SetActive(false);
+            }
+
+            if (levelSlider != null)
+            {
+                levelSlider.gameObject.SetActive(false);
+            }
+
+            return;
+        }
+
         float progress = LevelManager.Instance.GetLevelProgress();
         levelText.text = $"Level {LevelManager.Instance.GetCurrentLevel()}";
-        killCountText.text = $"{LevelManager.Instance.GetEnemiesKilled()}/{LevelManager.Instance.GetEnemiesNeeded()}";
 
-        if (fillImage != null)
+        if (killCountText != null)
+        {
+            killCountText.gameObject.SetActive(true);
+            killCountText.text = $"{LevelManager.Instance.GetEnemiesKilled()}/{LevelManager.Instance.GetEnemiesNeeded()}";
+        }
+
+        if (levelSlider != null)
+        {
+            levelSlider.gameObject.SetActive(true);
+        }
+
+        if (fillImage != null && levelSlider != null && levelSlider.gameObject.activeSelf)
         {
             Color fillColor = fillImage.color;
             fillColor.a = progress > 0 ? 1f : 0f;

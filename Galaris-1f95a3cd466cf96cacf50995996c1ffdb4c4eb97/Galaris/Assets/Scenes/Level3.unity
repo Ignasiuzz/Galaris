@@ -2098,6 +2098,19 @@ MonoBehaviour:
     spawnInterval: 0.5
   - enemyPrefab: {fileID: 2906105045815633853, guid: 3f2a577867b4e450083b5e57d56c4775, type: 3}
     spawnInterval: 5
+  endlessEnemyTypes:
+  - enemyPrefab: {fileID: 2661784160778554427, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
+    spawnInterval: 1
+  - enemyPrefab: {fileID: 3333666172669618366, guid: e8878258b0a0a3f4cad999699e4006c6, type: 3}
+    spawnInterval: 5
+  - enemyPrefab: {fileID: 4664308443174063891, guid: 29e7496444ebe4b379b58795cf4799cd, type: 3}
+    spawnInterval: 1
+  - enemyPrefab: {fileID: 2623044361460778822, guid: e4da9e7359aec4350a479ae4afd4a50a, type: 3}
+    spawnInterval: 5
+  - enemyPrefab: {fileID: 7736020212496122470, guid: 7d0901217eeaa4896947a0db083f2ec0, type: 3}
+    spawnInterval: 0.5
+  - enemyPrefab: {fileID: 2906105045815633853, guid: 3f2a577867b4e450083b5e57d56c4775, type: 3}
+    spawnInterval: 5
   spawnRadius: 40
   playerObject: {fileID: 909588911}
 --- !u!4 &1967541166

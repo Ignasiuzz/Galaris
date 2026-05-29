@@ -11,6 +11,7 @@ public class EnemySpawnInfo
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private EnemySpawnInfo[] enemyTypes;
+    [SerializeField] private EnemySpawnInfo[] endlessEnemyTypes;
     [SerializeField] private float spawnRadius = 10f;
     [SerializeField] private GameObject playerObject; // Reference to the player
 
@@ -67,13 +68,14 @@ public class EnemySpawner : MonoBehaviour
                 continue;
             }
 
-            if (enemyTypes == null || enemyTypes.Length == 0)
+            EnemySpawnInfo[] activeEnemyTypes = GetActiveEnemyTypes();
+            if (activeEnemyTypes == null || activeEnemyTypes.Length == 0)
             {
                 yield return null;
                 continue;
             }
 
-            foreach (var enemyType in enemyTypes)
+            foreach (var enemyType in activeEnemyTypes)
             {
                 if (enemyType == null || enemyType.enemyPrefab == null)
                 {
@@ -120,5 +122,15 @@ public class EnemySpawner : MonoBehaviour
                 // You can add more logic here if needed
             }
         }
+    }
+
+    private EnemySpawnInfo[] GetActiveEnemyTypes()
+    {
+        if (LevelManager.Instance != null && LevelManager.Instance.IsEndlessMode() && endlessEnemyTypes != null && endlessEnemyTypes.Length > 0)
+        {
+            return endlessEnemyTypes;
+        }
+
+        return enemyTypes;
     }
 }

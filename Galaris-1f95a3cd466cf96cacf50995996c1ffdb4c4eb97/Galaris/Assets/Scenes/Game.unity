@@ -4279,7 +4279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d232c15b18294437ad0351114f9e8b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemiesNeededPerLevel: 050000000a00000028000000
+  enemiesNeededPerLevel: 050000000a0000000a000000
   currentLevel: 1
 --- !u!4 &1859849184
 Transform:
@@ -4459,6 +4459,7 @@ MonoBehaviour:
     spawnInterval: 1
   - enemyPrefab: {fileID: 3333666172669618366, guid: e8878258b0a0a3f4cad999699e4006c6, type: 3}
     spawnInterval: 5
+  endlessEnemyTypes: []
   spawnRadius: 20
   playerObject: {fileID: 802813315}
 --- !u!4 &1967541166

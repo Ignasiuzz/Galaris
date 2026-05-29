@@ -12,6 +12,7 @@ public class LevelManager : MonoBehaviour
     public int currentLevel = 1;
     private int enemiesKilled = 0;
     private int enemiesNeededForLevelUp;
+    private bool isEndlessMode;
 
     void Awake()
     {
@@ -45,6 +46,12 @@ public class LevelManager : MonoBehaviour
 
     private void CalculateEnemiesNeeded()
     {
+        if (isEndlessMode)
+        {
+            enemiesNeededForLevelUp = 0;
+            return;
+        }
+
         int levelIndex = currentLevel - 1;
         if (levelIndex >= 0 && levelIndex < enemiesNeededPerLevel.Length)
         {
@@ -58,6 +65,12 @@ public class LevelManager : MonoBehaviour
     public void RegisterEnemyKilled()
     {
         enemiesKilled++;
+        if (isEndlessMode)
+        {
+            Debug.Log($"Enemy killed in endless mode! Total this run: {enemiesKilled}");
+            return;
+        }
+
         Debug.Log($"Enemy killed! {enemiesKilled}/{enemiesNeededForLevelUp}");
 
         if (enemiesKilled >= enemiesNeededForLevelUp)
@@ -70,9 +83,15 @@ public class LevelManager : MonoBehaviour
     {
         if (currentLevel >= levelScenes.Length)
         {
+            if (!isEndlessMode)
+            {
+                isEndlessMode = true;
+                enemiesKilled = 0;
+                CalculateEnemiesNeeded();
+                Debug.Log("Entered endless mode.");
+            }
+
             enemiesKilled = 0;
-            CalculateEnemiesNeeded();
-            Debug.Log("Already on the final level.");
             return;
         }
 
@@ -99,6 +118,11 @@ public class LevelManager : MonoBehaviour
 
     public float GetLevelProgress()
     {
+        if (isEndlessMode || enemiesNeededForLevelUp <= 0)
+        {
+            return 0f;
+        }
+
         return (float)enemiesKilled / enemiesNeededForLevelUp;
     }
 
@@ -117,10 +141,16 @@ public class LevelManager : MonoBehaviour
         return currentLevel;
     }
 
+    public bool IsEndlessMode()
+    {
+        return isEndlessMode;
+    }
+
     public void ResetLevel()
     {
         currentLevel = 1;
         enemiesKilled = 0;
+        isEndlessMode = false;
         CalculateEnemiesNeeded();
         Debug.Log("Level reset to 1");
     }
