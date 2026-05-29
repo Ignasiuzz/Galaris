@@ -517,10 +517,12 @@ MonoBehaviour:
   objectsToSpawn: 15
   minDistanceBetweenObjects: 10
   spawnableObjects:
-  - prefab: {fileID: 4187966255285545747, guid: ce15002083d1d734f986f702174aeff1, type: 3}
+  - prefab: {fileID: 7487699529223920347, guid: 1e584c06dce174d66a6e330fc92d49d7, type: 3}
     spawnProbability: 10
-  - prefab: {fileID: 4187966255285545747, guid: ca88b801d1c20844991d6cbe897233c6, type: 3}
+  - prefab: {fileID: 3094202367340757423, guid: cefdc7ddfdb164e91a0f8ed43fe84a33, type: 3}
     spawnProbability: 7
+  - prefab: {fileID: 3876925290813500845, guid: 466c0f8e39091485bb78ca28f0de976e, type: 3}
+    spawnProbability: 2
   playerTransform: {fileID: 909588921}
 --- !u!4 &198814312
 Transform:
@@ -1530,7 +1532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11f3257508deefb44b7bc6397907e441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundPrefab: {fileID: 490068248968823565, guid: 6239cbdd0fc59e14a96ec0963cea8f14, type: 3}
+  backgroundPrefab: {fileID: 4535014156550633461, guid: e927735a8c01342a3866169f764f6226, type: 3}
   gridWidth: 2
   gridHeight: 2
   backgroundSize: 40
@@ -2092,11 +2094,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyTypes:
-  - enemyPrefab: {fileID: 2661784160778554427, guid: bd4e4b63cab3df541af31cf32795f9c8, type: 3}
-    spawnInterval: 1
-  - enemyPrefab: {fileID: 3333666172669618366, guid: e8878258b0a0a3f4cad999699e4006c6, type: 3}
+  - enemyPrefab: {fileID: 7736020212496122470, guid: 7d0901217eeaa4896947a0db083f2ec0, type: 3}
+    spawnInterval: 0.5
+  - enemyPrefab: {fileID: 2906105045815633853, guid: 3f2a577867b4e450083b5e57d56c4775, type: 3}
     spawnInterval: 5
-  spawnRadius: 20
+  spawnRadius: 40
   playerObject: {fileID: 909588911}
 --- !u!4 &1967541166
 Transform:

@@ -2096,9 +2096,9 @@ MonoBehaviour:
   enemyTypes:
   - enemyPrefab: {fileID: 4664308443174063891, guid: 29e7496444ebe4b379b58795cf4799cd, type: 3}
     spawnInterval: 1
-  - enemyPrefab: {fileID: 3333666172669618366, guid: e8878258b0a0a3f4cad999699e4006c6, type: 3}
-    spawnInterval: 2
-  spawnRadius: 20
+  - enemyPrefab: {fileID: 2623044361460778822, guid: e4da9e7359aec4350a479ae4afd4a50a, type: 3}
+    spawnInterval: 5
+  spawnRadius: 40
   playerObject: {fileID: 909588911}
 --- !u!4 &1967541166
 Transform:

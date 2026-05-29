@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class Level2Enemy2 : MonoBehaviour
+public class Level3Enemy2 : MonoBehaviour
 {
     public Transform player;
     public GameObject enemyBulletObject;
@@ -16,23 +16,25 @@ public class Level2Enemy2 : MonoBehaviour
     public float bulletSpeed = 10.0f;
     public Transform bulletSpawnPoint;
     public Transform bulletSpawnPoint2;
+    public Transform bulletSpawnPoint3;
     public int maxHealth = 10;
     public int currentHealth;
     public int points = 10;
     public Animator EnemyAnimator;
     public RuntimeAnimatorController fallbackAnimatorController;
 
-    [Header("Freeze Bullet")]
+    [Header("Burn Bullet")]
     [SerializeField] private int bulletDamage = 1;
-    [SerializeField] private float freezeSpeedMultiplier = 0.45f;
-    [SerializeField] private float freezeDuration = 1.75f;
+    [SerializeField] private float burnTickDamage = 0.2f;
+    [SerializeField] private int burnTickCount = 12;
+    [SerializeField] private float burnTickInterval = 0.5f;
 
-    [SerializeField] private float spinSpeed = 180.0f;
     [SerializeField] private float flashingDuration = 1.5f;
     [SerializeField] private float deathCleanupDelay = 1.25f;
-    [SerializeField] private float deathExplosionScaleMultiplier = 3.33f;
+    [SerializeField] private float deathExplosionScaleMultiplier = 1.9f;
     [SerializeField] private float shootSfxVolume = 0.2f;
     [SerializeField] private float deathSfxVolume = 0.3f;
+    [SerializeField] private string deathTriggerName = "Death";
     [SerializeField] private AudioSource ShootSoundEffect;
     [SerializeField] private AudioSource DeathSoundEffect;
 
@@ -107,7 +109,7 @@ public class Level2Enemy2 : MonoBehaviour
         }
 
         UpdateFlashState();
-        Spin();
+        transform.up = (player.position - transform.position).normalized;
         MoveTowardsPlayer();
     }
 
@@ -142,6 +144,7 @@ public class Level2Enemy2 : MonoBehaviour
             isFiring = true;
             SpawnBullet(bulletSpawnPoint != null ? bulletSpawnPoint : transform);
             SpawnBullet(bulletSpawnPoint2 != null ? bulletSpawnPoint2 : transform);
+            SpawnBullet(bulletSpawnPoint3 != null ? bulletSpawnPoint3 : transform);
             isFiring = false;
         }
     }
@@ -158,16 +161,16 @@ public class Level2Enemy2 : MonoBehaviour
 
         if (ShootSoundEffect != null)
         {
-            SfxLimiter.TryPlay(ShootSoundEffect, "level2_enemy_shoot", 0.12f, 1, 0.3f);
+            SfxLimiter.TryPlay(ShootSoundEffect, "level3_enemy_shoot", 0.12f, 1, 0.3f);
         }
 
-        FreezingEnemyBullet freezingBullet = enemyBullet.GetComponent<FreezingEnemyBullet>();
-        if (freezingBullet == null)
+        BurningEnemyBullet burningBullet = enemyBullet.GetComponent<BurningEnemyBullet>();
+        if (burningBullet == null)
         {
-            freezingBullet = enemyBullet.AddComponent<FreezingEnemyBullet>();
+            burningBullet = enemyBullet.AddComponent<BurningEnemyBullet>();
         }
 
-        freezingBullet.Configure(bulletDamage, freezeSpeedMultiplier, freezeDuration);
+        burningBullet.Configure(bulletDamage, burnTickDamage, burnTickCount, burnTickInterval);
 
         Rigidbody2D bulletRigidbody = enemyBullet.GetComponent<Rigidbody2D>();
         if (bulletRigidbody == null)
@@ -175,15 +178,19 @@ public class Level2Enemy2 : MonoBehaviour
             bulletRigidbody = enemyBullet.AddComponent<Rigidbody2D>();
         }
 
+        Collider2D bulletCollider = enemyBullet.GetComponent<Collider2D>();
+        if (bulletCollider != null && enemyCollider != null)
+        {
+            Physics2D.IgnoreCollision(bulletCollider, enemyCollider, true);
+        }
+
         bulletRigidbody.gravityScale = 0f;
         bulletRigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         bulletRigidbody.angularVelocity = 0f;
 
-        Vector2 direction = transform.TransformDirection(spawnPoint.localPosition.normalized);
-        if (direction.sqrMagnitude <= 0.0001f)
-        {
-            direction = spawnPoint.right;
-        }
+        Vector2 direction = player != null
+            ? (player.position - spawnPoint.position).normalized
+            : (Vector2)transform.up;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         enemyBullet.transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -216,11 +223,6 @@ public class Level2Enemy2 : MonoBehaviour
 
         Vector3 movementDirection = (player.position - transform.position).normalized;
         transform.position += movementDirection * currentSpeed * Time.deltaTime;
-    }
-
-    private void Spin()
-    {
-        transform.Rotate(0f, 0f, spinSpeed * Time.deltaTime);
     }
 
     private void UpdateFlashState()
@@ -258,7 +260,7 @@ public class Level2Enemy2 : MonoBehaviour
 
         if (DeathSoundEffect != null)
         {
-            SfxLimiter.TryPlay(DeathSoundEffect, "level2_enemy_death", 0.2f, 1, 0.45f);
+            SfxLimiter.TryPlay(DeathSoundEffect, "level3_enemy_death", 0.2f, 1, 0.45f);
         }
 
         currentSpeed = 0f;
@@ -277,9 +279,9 @@ public class Level2Enemy2 : MonoBehaviour
 
         transform.localScale = initialLocalScale * deathExplosionScaleMultiplier;
 
-        if (EnemyAnimator != null && EnemyAnimator.runtimeAnimatorController != null)
+        if (EnemyAnimator != null && EnemyAnimator.runtimeAnimatorController != null && !string.IsNullOrWhiteSpace(deathTriggerName))
         {
-            EnemyAnimator.SetTrigger("Deatha");
+            EnemyAnimator.SetTrigger(deathTriggerName);
         }
 
         GetComponent<DropList>()?.InstantiateLoot(transform.position);

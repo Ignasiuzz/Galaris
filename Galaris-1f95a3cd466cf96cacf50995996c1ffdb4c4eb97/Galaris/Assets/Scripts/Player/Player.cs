@@ -46,8 +46,13 @@ public class Player : MonoBehaviour
     private float lastShootTime = 0f; // The time of the last shot
     private float movementSpeedMultiplier = 1f;
     private Coroutine movementSlowRoutine;
+    private Coroutine burnRoutine;
+    private bool isMovementSlowed;
+    private bool isBurning;
+    private bool burnBlinkVisible;
     private Color defaultPlayerColor = Color.white;
     private static readonly Color FrozenPlayerColor = new Color(0.55f, 0.75f, 1f, 0.8f);
+    private static readonly Color BurningPlayerColor = new Color(1f, 0.55f, 0.2f, 0.95f);
 
     void Start()
     {
@@ -96,7 +101,15 @@ public class Player : MonoBehaviour
             }
             else
             {
-                TakeDamage(enemyDamage);
+                BurningEnemyBullet burningBullet = collision.gameObject.GetComponent<BurningEnemyBullet>();
+                if (burningBullet != null)
+                {
+                    burningBullet.ApplyToPlayer(this);
+                }
+                else
+                {
+                    TakeDamage(enemyDamage);
+                }
             }
 
             Destroy(collision.gameObject);
@@ -127,6 +140,22 @@ public class Player : MonoBehaviour
         }
 
         movementSlowRoutine = StartCoroutine(ApplyMovementSlowRoutine(clampedMultiplier, duration));
+    }
+
+    public void ApplyBurn(float tickDamage, int tickCount, float tickInterval)
+    {
+        float clampedTickDamage = Mathf.Max(0f, tickDamage);
+        int clampedTickCount = Mathf.Max(1, tickCount);
+        float clampedTickInterval = Mathf.Max(0.05f, tickInterval);
+
+        if (burnRoutine != null)
+        {
+            StopCoroutine(burnRoutine);
+        }
+
+        isBurning = false;
+        burnBlinkVisible = false;
+        burnRoutine = StartCoroutine(ApplyBurnRoutine(clampedTickDamage, clampedTickCount, clampedTickInterval));
     }
 
     void Die()
@@ -202,30 +231,89 @@ public class Player : MonoBehaviour
     private IEnumerator ApplyMovementSlowRoutine(float speedMultiplier, float duration)
     {
         movementSpeedMultiplier = speedMultiplier;
-        SetPlayerFrozenVisual(true);
+        isMovementSlowed = true;
+        UpdatePlayerStatusVisual();
         yield return new WaitForSeconds(duration);
         movementSpeedMultiplier = 1f;
-        SetPlayerFrozenVisual(false);
+        isMovementSlowed = false;
+        UpdatePlayerStatusVisual();
         movementSlowRoutine = null;
     }
 
-    private void SetPlayerFrozenVisual(bool isFrozen)
+    private IEnumerator ApplyBurnRoutine(float tickDamage, int tickCount, float tickInterval)
     {
-        if (playerSpriteRenderer == null)
+        isBurning = true;
+
+        for (int tickIndex = 0; tickIndex < tickCount; tickIndex++)
         {
-            playerSpriteRenderer = GetComponent<SpriteRenderer>();
-            if (playerSpriteRenderer != null)
+            if (isDead)
             {
-                defaultPlayerColor = playerSpriteRenderer.color;
+                break;
+            }
+
+            burnBlinkVisible = true;
+            UpdatePlayerStatusVisual();
+            TakeDamage(tickDamage);
+
+            float blinkDuration = Mathf.Min(tickInterval * 0.5f, 0.12f);
+            yield return new WaitForSeconds(blinkDuration);
+
+            if (isDead)
+            {
+                break;
+            }
+
+            burnBlinkVisible = false;
+            UpdatePlayerStatusVisual();
+
+            float remainingDuration = tickInterval - blinkDuration;
+            if (remainingDuration > 0f)
+            {
+                yield return new WaitForSeconds(remainingDuration);
             }
         }
 
+        isBurning = false;
+        burnBlinkVisible = false;
+        UpdatePlayerStatusVisual();
+        burnRoutine = null;
+    }
+
+    private void UpdatePlayerStatusVisual()
+    {
+        EnsurePlayerSpriteRenderer();
         if (playerSpriteRenderer == null)
         {
             return;
         }
 
-        playerSpriteRenderer.color = isFrozen ? FrozenPlayerColor : defaultPlayerColor;
+        if (isBurning && burnBlinkVisible)
+        {
+            playerSpriteRenderer.color = BurningPlayerColor;
+            return;
+        }
+
+        if (isMovementSlowed)
+        {
+            playerSpriteRenderer.color = FrozenPlayerColor;
+            return;
+        }
+
+        playerSpriteRenderer.color = defaultPlayerColor;
+    }
+
+    private void EnsurePlayerSpriteRenderer()
+    {
+        if (playerSpriteRenderer != null)
+        {
+            return;
+        }
+
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (playerSpriteRenderer != null)
+        {
+            defaultPlayerColor = playerSpriteRenderer.color;
+        }
     }
 
     void ApplySteering()

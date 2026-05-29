@@ -2,7 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-public class Level2Enemy1 : MonoBehaviour
+public class Level3Enemy1 : MonoBehaviour
 {
     public Transform player;
     public GameObject enemyBulletObject;
@@ -19,14 +19,14 @@ public class Level2Enemy1 : MonoBehaviour
     public int points = 10;
     public Animator EnemyAnimator;
 
-    [Header("Freeze Bullet")]
+    [Header("Burn Bullet")]
     [SerializeField] private int bulletDamage = 1;
-    [SerializeField] private float freezeSpeedMultiplier = 0.45f;
-    [SerializeField] private float freezeDuration = 1.75f;
+    [SerializeField] private float burnTickDamage = 0.2f;
+    [SerializeField] private int burnTickCount = 12;
+    [SerializeField] private float burnTickInterval = 0.5f;
     [SerializeField] private float spawnProtectionDuration = 0.35f;
     [SerializeField] private float deathCleanupDelay = 1.25f;
-    [SerializeField] private float deathScaleMultiplier = 3.33f;
-    [SerializeField] private float deathScaleDelay = 0.2f;
+    [SerializeField] private float deathExplosionScaleMultiplier = 1.9f;
     [SerializeField] private float shootSfxVolume = 0.2f;
     [SerializeField] private float deathSfxVolume = 0.3f;
 
@@ -114,7 +114,7 @@ public class Level2Enemy1 : MonoBehaviour
 
         if (DeathSoundEffect != null)
         {
-            SfxLimiter.TryPlay(DeathSoundEffect, "level2_enemy_death", 0.2f, 1, 0.45f);
+            SfxLimiter.TryPlay(DeathSoundEffect, "level3_enemy_death", 0.2f, 1, 0.45f);
         }
 
         enemyRigidbody.isKinematic = true;
@@ -122,25 +122,19 @@ public class Level2Enemy1 : MonoBehaviour
         currentSpeed = 0;
         enemyRigidbody.velocity = Vector2.zero;
         enemyRigidbody.angularVelocity = 0f;
+        transform.localScale = initialLocalScale * deathExplosionScaleMultiplier;
         if (EnemyAnimator != null)
         {
             EnemyAnimator.SetTrigger("Death");
         }
 
         GetComponent<DropList>()?.InstantiateLoot(transform.position);
-        StartCoroutine(ApplyDeathScaleAfterDelay());
         Destroy(gameObject, deathCleanupDelay);
     }
 
     public void OnDeathAnimationEnd()
     {
         Destroy(gameObject);
-    }
-
-    private System.Collections.IEnumerator ApplyDeathScaleAfterDelay()
-    {
-        yield return new WaitForSeconds(deathScaleDelay);
-        transform.localScale = initialLocalScale * deathScaleMultiplier;
     }
 
     private void Update()
@@ -157,8 +151,7 @@ public class Level2Enemy1 : MonoBehaviour
         }
 
         Vector3 direction = (player.position - transform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        transform.up = direction;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -202,7 +195,7 @@ public class Level2Enemy1 : MonoBehaviour
     {
         if (enemyBulletObject == null)
         {
-            Debug.LogWarning("Level2Enemy1 bullet prefab is not assigned.");
+            Debug.LogWarning("Level3Enemy1 bullet prefab is not assigned.");
             return;
         }
 
@@ -212,21 +205,27 @@ public class Level2Enemy1 : MonoBehaviour
 
         if (ShootSoundEffect != null)
         {
-            SfxLimiter.TryPlay(ShootSoundEffect, "level2_enemy_shoot", 0.12f, 1, 0.3f);
+            SfxLimiter.TryPlay(ShootSoundEffect, "level3_enemy_shoot", 0.12f, 1, 0.3f);
         }
 
-        FreezingEnemyBullet freezingBullet = enemyBullet.GetComponent<FreezingEnemyBullet>();
-        if (freezingBullet == null)
+        BurningEnemyBullet burningBullet = enemyBullet.GetComponent<BurningEnemyBullet>();
+        if (burningBullet == null)
         {
-            freezingBullet = enemyBullet.AddComponent<FreezingEnemyBullet>();
+            burningBullet = enemyBullet.AddComponent<BurningEnemyBullet>();
         }
 
-        freezingBullet.Configure(bulletDamage, freezeSpeedMultiplier, freezeDuration);
+        burningBullet.Configure(bulletDamage, burnTickDamage, burnTickCount, burnTickInterval);
 
         Rigidbody2D bulletRigidbody = enemyBullet.GetComponent<Rigidbody2D>();
         if (bulletRigidbody == null)
         {
             bulletRigidbody = enemyBullet.AddComponent<Rigidbody2D>();
+        }
+
+        Collider2D bulletCollider = enemyBullet.GetComponent<Collider2D>();
+        if (bulletCollider != null && enemyCollider != null)
+        {
+            Physics2D.IgnoreCollision(bulletCollider, enemyCollider, true);
         }
 
         if (bulletRigidbody != null)
@@ -238,6 +237,8 @@ public class Level2Enemy1 : MonoBehaviour
         if (bulletRigidbody != null && player != null)
         {
             Vector2 direction = (player.position - spawnPoint.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            enemyBullet.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             bulletRigidbody.velocity = direction * bulletSpeed;
         }
     }
